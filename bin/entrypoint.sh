@@ -140,4 +140,13 @@ echo "running $NAME..."
 ./entrypoint-exim.sh
 /usr/sbin/exim4 -bd -q1m
 
+# ------------------
+#  DOVECOT
+
+NAME="dovecot"
+echo $SEP
+echo "running $NAME..."
+
+./entrypoint-dovecot.sh
+dovecot
 

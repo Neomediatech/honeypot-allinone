@@ -39,7 +39,17 @@ RUN apt-get update && apt-get -y dist-upgrade && \
     echo "deb-src [arch=amd64] http://rspamd.com/apt-stable/ $CODENAME main" >> /etc/apt/sources.list.d/rspamd.list && \
     apt-get update && \
     apt-get --no-install-recommends install -y rspamd && \
-    useradd -u 5000 -U -s /bin/false -m -d /var/spool/virtual vmail && \
+    curl https://repo.dovecot.org/DOVECOT-REPO-GPG | gpg --import && \
+    gpg --export ED409DA1 > /etc/apt/trusted.gpg.d/dovecot.gpg && \
+    echo "deb https://repo.dovecot.org/ce-2.3-latest/ubuntu/focal focal main" > /etc/apt/sources.list.d/dovecot.list && \
+    apt update && \
+    apt install -y --no-install-recommends dovecot-core dovecot-imapd dovecot-lmtpd \
+            dovecot-mysql dovecot-pop3d dovecot-sieve dovecot-sqlite dovecot-submissiond && \
+    groupadd -g 5000 vmail && useradd -u 5000 -g 5000 vmail -d /srv/mail && passwd -l vmail && \
+    rm -rf /etc/dovecot && mkdir -p /srv/mail && chown vmail:vmail /srv/mail && \
+    make-ssl-cert generate-default-snakeoil && \
+    mkdir /etc/dovecot && ln -s /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/dovecot/fullchain.pem && \
+    ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem && \
     apt-get purge -yq binutils cpp gcc libc6-dev linux-libc-dev make && \
     apt-get -y autoremove --purge && \
     apt-get clean && \
@@ -53,7 +63,7 @@ COPY --chown=_rspamd:_rspamd conf/rspamd/local.d/* /etc/rspamd/local.d/
 
 WORKDIR /srv/scripts
 COPY bin/* ./
-RUN chmod +x entrypoint.sh entrypoint-rspamd.sh entrypoint-exim.sh entrypoint-clamav.sh init.sh gencert.sh razorfy.pl && \
+RUN chmod +x entrypoint.sh entrypoint-rspamd.sh entrypoint-exim.sh entrypoint-clamav.sh entrypoint-dovecot.sh init.sh gencert.sh razorfy.pl && \
     cp digest.py /usr/local/lib/python3.8/dist-packages/pyzor/digest.py 
 
 WORKDIR /
