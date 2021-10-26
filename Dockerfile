@@ -49,7 +49,7 @@ COPY --chown=razor:razor conf/razor-agent.conf /home/razor/.razor
 
 COPY conf/dcc_conf /var/dcc/dcc_conf
 
-COPY --chown=_rspamd:_rspamd conf/razor/local.d/* /etc/rspamd/local.d/
+COPY --chown=_rspamd:_rspamd conf/rspamd/local.d/* /etc/rspamd/local.d/
 
 WORKDIR /srv/scripts
 COPY bin/* ./
