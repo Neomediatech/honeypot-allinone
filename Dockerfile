@@ -49,6 +49,8 @@ COPY --chown=razor:razor conf/razor-agent.conf /home/razor/.razor
 
 COPY conf/dcc_conf /var/dcc/dcc_conf
 
+COPY --chown=_rspamd:_rspamd conf/razor/local.d/* /etc/rspamd/local.d/
+
 WORKDIR /srv/scripts
 COPY bin/* ./
 RUN chmod +x entrypoint.sh entrypoint-rspamd.sh entrypoint-exim.sh entrypoint-clamav.sh init.sh gencert.sh razorfy.pl && \
