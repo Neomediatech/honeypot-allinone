@@ -130,6 +130,19 @@ rspamd -u _rspamd -g _rspamd
 echo -e "\n"
 
 # ------------------
+#  DOVECOT
+
+NAME="dovecot"
+echo $SEP
+echo "running $NAME..."
+
+./entrypoint-dovecot.sh
+dovecot
+echo -e "\n"
+
+# below the last service to start
+
+# ------------------
 #  EXIM
 
 NAME="exim"
@@ -139,14 +152,6 @@ echo "running $NAME..."
 ./init.sh
 ./entrypoint-exim.sh
 /usr/sbin/exim4 -bd -q1m
+echo -e "\n"
 
-# ------------------
-#  DOVECOT
-
-NAME="dovecot"
-echo $SEP
-echo "running $NAME..."
-
-./entrypoint-dovecot.sh
-dovecot
 

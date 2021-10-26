@@ -9,16 +9,28 @@ LABEL maintainer="docker-dario@neomediatech.it" \
       org.label-schema.vcs-url=https://github.com/Neomediatech/${SERVICE} \
       org.label-schema.maintainer=Neomediatech
 
-RUN apt-get update && apt-get -y dist-upgrade && \
+RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
+    lsb-release wget gnupg curl ca-certificates && \
+    CODENAME=`lsb_release -c -s` && \
+    wget -O- https://rspamd.com/apt-stable/gpg.key | apt-key add - && \
+    echo "deb [arch=amd64] http://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list && \
+    echo "deb-src [arch=amd64] http://rspamd.com/apt-stable/ $CODENAME main" >> /etc/apt/sources.list.d/rspamd.list && \
+    curl https://repo.dovecot.org/DOVECOT-REPO-GPG | gpg --import && \
+    gpg --export ED409DA1 > /etc/apt/trusted.gpg.d/dovecot.gpg && \
+    echo "deb https://repo.dovecot.org/ce-2.3-latest/ubuntu/focal focal main" > /etc/apt/sources.list.d/dovecot.list && \
+    apt-get update && apt-get -y dist-upgrade && \
     apt-get install -y --no-install-recommends --no-install-suggests \
     bind9 \
     python3 python3-pip \
     razor \
-    apt-utils ca-certificates ssl-cert curl gcc libc-dev make \
+    apt-utils ssl-cert gcc libc-dev make \
     redis \
+    dovecot-core dovecot-imapd dovecot-lmtpd dovecot-mysql dovecot-pop3d dovecot-sieve dovecot-sqlite dovecot-submissiond \
     clamav clamav-daemon clamav-freshclam clamav-unofficial-sigs \
-    lsb-release wget gnupg \
-    mariadb-client exim4-daemon-heavy libswitch-perl openssl && \
+    mariadb-client exim4-daemon-heavy libswitch-perl openssl \
+    sudo build-essential tcpdump libpcap-dev libffi-dev \
+    libssl-dev python-dev python-setuptools virtualenv \
+    rspamd python2 && \
     pip install setuptools && \
     pip install wheel && \
     pip install pyzor && \
@@ -33,24 +45,21 @@ RUN apt-get update && apt-get -y dist-upgrade && \
     mkdir -p /run/named && chown bind /run/named && \
     mkdir -p /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
-    CODENAME=`lsb_release -c -s` && \
-    wget -O- https://rspamd.com/apt-stable/gpg.key | apt-key add - && \
-    echo "deb [arch=amd64] http://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list && \
-    echo "deb-src [arch=amd64] http://rspamd.com/apt-stable/ $CODENAME main" >> /etc/apt/sources.list.d/rspamd.list && \
-    apt-get update && \
-    apt-get --no-install-recommends install -y rspamd && \
-    curl https://repo.dovecot.org/DOVECOT-REPO-GPG | gpg --import && \
-    gpg --export ED409DA1 > /etc/apt/trusted.gpg.d/dovecot.gpg && \
-    echo "deb https://repo.dovecot.org/ce-2.3-latest/ubuntu/focal focal main" > /etc/apt/sources.list.d/dovecot.list && \
-    apt update && \
-    apt install -y --no-install-recommends dovecot-core dovecot-imapd dovecot-lmtpd \
-            dovecot-mysql dovecot-pop3d dovecot-sieve dovecot-sqlite dovecot-submissiond && \
     groupadd -g 5000 vmail && useradd -u 5000 -g 5000 vmail -d /srv/mail && passwd -l vmail && \
     rm -rf /etc/dovecot && mkdir -p /srv/mail && chown vmail:vmail /srv/mail && \
     make-ssl-cert generate-default-snakeoil && \
     mkdir /etc/dovecot && ln -s /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/dovecot/fullchain.pem && \
     ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem && \
-    apt-get purge -yq binutils cpp gcc libc6-dev linux-libc-dev make && \
+    curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output /tmp/get-pip.py && \
+    python2 /tmp/get-pip.py
+RUN mkdir -p /opt/opencanary && \
+    virtualenv --python=$(which python2) /opt/opencanary/virtualenv && \
+    . /opt/opencanary/virtualenv/bin/activate && \
+    pip install pip --upgrade && \
+    pip install opencanary && \
+    pip install scapy pcapy && \
+    mkdir -p /opt/opencanary/scripts /data && touch /data/opencanary.log && chmod 666 /data/opencanary.log && \
+    apt-get purge -yq binutils cpp gcc libc6-dev linux-libc-dev make build-essential libpcap-dev libffi-dev libssl-dev python-dev && \
     apt-get -y autoremove --purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/log/* /var/tmp/* /usr/share/man/??_* /usr/share/man/?? /usr/local/share/doc /usr/local/share/man
@@ -60,6 +69,8 @@ COPY --chown=razor:razor conf/razor-agent.conf /home/razor/.razor
 COPY conf/dcc_conf /var/dcc/dcc_conf
 
 COPY --chown=_rspamd:_rspamd conf/rspamd/local.d/* /etc/rspamd/local.d/
+
+COPY conf/dovecot/* /etc/dovecot/
 
 WORKDIR /srv/scripts
 COPY bin/* ./
