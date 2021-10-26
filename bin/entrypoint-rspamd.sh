@@ -8,7 +8,7 @@ PASSWORD=${PASSWORD:-"$PWCRYPT"}
 #ENABLE_PASSWORD=${ENABLE_PASSWORD:-$PASSWORD}
 
 # Check custom configuration files
-CUSTOM_CONF_BASE_DIR="/data/rspamd"
+CUSTOM_CONF_BASE_DIR="/data/rspamd/conf"
 CUSTOM_CONF_DIRS="local.d override.d plugins.d"
 for DIR in $CUSTOM_CONF_DIRS; do
   CUSTOM_CONF_DIR="$CUSTOM_CONF_BASE_DIR/$DIR"
