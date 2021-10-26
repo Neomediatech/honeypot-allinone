@@ -14,7 +14,7 @@ RUN apt-get update && apt-get -y dist-upgrade && \
     bind9 \
     python3 python3-pip \
     razor \
-    apt-utils ca-certificates curl gcc libc-dev make \
+    apt-utils ca-certificates ssl-cert curl gcc libc-dev make \
     redis \
     clamav clamav-daemon clamav-freshclam clamav-unofficial-sigs \
     lsb-release wget gnupg \
