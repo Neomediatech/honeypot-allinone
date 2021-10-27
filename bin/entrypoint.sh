@@ -140,6 +140,16 @@ echo "running $NAME..."
 dovecot
 echo -e "\n"
 
+# ------------------
+#  OPENCANARY
+
+NAME="opencanary"
+echo $SEP
+echo "running $NAME..."
+
+./startcanary.sh
+echo -e "\n"
+
 # below the last service to start
 
 # ------------------
@@ -149,7 +159,6 @@ NAME="exim"
 echo $SEP
 echo "running $NAME..."
 
-./init.sh
 ./entrypoint-exim.sh
 /usr/sbin/exim4 -bd -q1m
 echo -e "\n"

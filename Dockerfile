@@ -28,9 +28,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     dovecot-core dovecot-imapd dovecot-lmtpd dovecot-mysql dovecot-pop3d dovecot-sieve dovecot-sqlite dovecot-submissiond \
     clamav clamav-daemon clamav-freshclam clamav-unofficial-sigs \
     mariadb-client exim4-daemon-heavy libswitch-perl openssl \
-    sudo build-essential tcpdump libpcap-dev libffi-dev \
-    libssl-dev python-dev python-setuptools virtualenv \
-    rspamd python2 && \
+    sudo \
+    virtualenv \
+    rspamd && \
     pip install setuptools && \
     pip install wheel && \
     pip install pyzor && \
@@ -49,20 +49,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     rm -rf /etc/dovecot && mkdir -p /srv/mail && chown vmail:vmail /srv/mail && \
     make-ssl-cert generate-default-snakeoil && \
     mkdir /etc/dovecot && ln -s /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/dovecot/fullchain.pem && \
-    ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem && \
-    curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output /tmp/get-pip.py && \
-    python2 /tmp/get-pip.py
+    ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem 
 RUN mkdir -p /opt/opencanary && \
-    virtualenv --python=$(which python2) /opt/opencanary/virtualenv && \
+    apt-get install -y --no-install-suggests \
+    python3-dev python3-pip python3-virtualenv python3-venv python3-scapy python3-wheel libssl-dev libpcap-dev samba 
+RUN apt-get install -y --no-install-recommends --no-install-suggests \
+    g++ gcc
+RUN virtualenv /opt/opencanary/virtualenv && \
     . /opt/opencanary/virtualenv/bin/activate && \
     pip install pip --upgrade && \
-    pip install opencanary && \
-    pip install scapy pcapy && \
+    pip install opencanary scapy pcapy && \
     mkdir -p /opt/opencanary/scripts /data && touch /data/opencanary.log && chmod 666 /data/opencanary.log && \
+    PY_VER="$(python3 -V|cut -d " " -f2|cut -d. -f1,2)" && \
+    cp /opt/opencanary/virtualenv/lib/python${PY_VER}/site-packages/opencanary/logger.py \
+       /opt/opencanary/virtualenv/lib/python${PY_VER}/site-packages/opencanary/logger.py.orig && \
+    ln -s /opt/opencanary/virtualenv/lib/python${PY_VER} /opt/opencanary/virtualenv/lib/python && \
     apt-get purge -yq binutils cpp gcc libc6-dev linux-libc-dev make build-essential libpcap-dev libffi-dev libssl-dev python-dev && \
     apt-get -y autoremove --purge && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/log/* /var/tmp/* /usr/share/man/??_* /usr/share/man/?? /usr/local/share/doc /usr/local/share/man
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/log/* /var/tmp/* /usr/share/man/??_* /usr/share/man/?? \
+           /usr/local/share/doc /usr/local/share/man /root/.cache
 
 COPY --chown=razor:razor conf/razor-agent.conf /home/razor/.razor
 
@@ -72,10 +78,14 @@ COPY --chown=_rspamd:_rspamd conf/rspamd/local.d/* /etc/rspamd/local.d/
 
 COPY conf/dovecot/* /etc/dovecot/
 
+COPY conf/opencanary/opencanary.conf /root/.opencanary.conf
+COPY bin/opencanary/logger.py /opt/opencanary/virtualenv/lib/python/site-packages/opencanary/logger.py
+
 WORKDIR /srv/scripts
 COPY bin/* ./
-RUN chmod +x entrypoint.sh entrypoint-rspamd.sh entrypoint-exim.sh entrypoint-clamav.sh entrypoint-dovecot.sh init.sh gencert.sh razorfy.pl && \
-    cp digest.py /usr/local/lib/python3.8/dist-packages/pyzor/digest.py 
+RUN chmod +x entrypoint.sh entrypoint-rspamd.sh entrypoint-exim.sh entrypoint-clamav.sh entrypoint-dovecot.sh \
+    gencert.sh razorfy.pl startcanary.sh && \
+    cp digest.py /usr/local/lib/python/dist-packages/pyzor/digest.py
 
 WORKDIR /
 EXPOSE 53 5953 5954 11342 10030 3310 25 465 587

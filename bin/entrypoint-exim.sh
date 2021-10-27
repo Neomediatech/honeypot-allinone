@@ -2,35 +2,70 @@
 
 MAILSERVER_CERT=${MAILSERVER_CERT:-noservername.domain.tld}
 CERT_DIR="/data/certs/live/${MAILSERVER_CERT}"
-LOGDIR=${EXIM_LOGDIR:-/var/log/exim4}
+LOGDIR=${EXIM_LOGDIR:-/data/log}
 HONEYPOT=${HONEYPOT:-false}
+
+cat > /etc/exim4/update-exim4.conf.conf <<EOM
+# /etc/exim4/update-exim4.conf.conf
+#
+# Edit this file and /etc/mailname by hand and execute update-exim4.conf
+# yourself or use 'dpkg-reconfigure exim4-config'
+#
+# Please note that this is _not_ a dpkg-conffile and that automatic changes
+# to this file might happen. The code handling this will honor your local
+# changes, so this is usually fine, but will break local schemes that mess
+# around with multiple versions of the file.
+#
+# update-exim4.conf uses this file to determine variable values to generate
+# exim configuration macros for the configuration file.
+#
+# Most settings found in here do have corresponding questions in the
+# Debconf configuration, but not all of them.
+#
+# This is a Debian specific file
+
+dc_eximconfig_configtype='internet'
+dc_other_hostnames=''
+dc_local_interfaces=''
+dc_readhost=''
+dc_relay_domains=''
+dc_minimaldns='false'
+dc_relay_nets=''
+dc_smarthost=''
+CFILEMODE='644'
+dc_use_split_config='true'
+dc_hide_mailname='true'
+dc_mailname_in_oh='true'
+dc_localdelivery='maildir_home'
+EOM
 
 if [ "$HONEYPOT" == "false" ]; then
   if [ "$LOGDIR" == "stdout" ]; then
     mkdir -p /var/log/exim4
-    rm -f /var/log/exim4/{mainlog,rejectlog,paniclog}
+    rm -f /var/log/exim4/{main,reject,panic}log
     ln -s /dev/stdout /var/log/exim4/mainlog
     ln -s /dev/stderr /var/log/exim4/rejectlog
     ln -s /dev/stderr /var/log/exim4/paniclog
-    echo 'log_file_path = syslog' > /etc/exim4/conf.d/main/02_custom
+    echo 'log_file_path = syslog' > /etc/exim4/conf.d/main/99_custom_log_file_path
   else
     if [ ! -d "${LOGDIR}" ]; then
       mkdir -p "${LOGDIR}"
-      chown Debian-exim:adm "${LOGDIR}"
-      chmod 750 "${LOGDIR}"
-      chmod g+s "${LOGDIR}"
+      #chown Debian-exim:adm "${LOGDIR}"
+      #chmod 750 "${LOGDIR}"
+      #chmod g+s "${LOGDIR}"
     fi
 
     if [ ! -f "${LOGDIR}/mainlog" ]; then
-      touch "${LOGDIR}/mainlog"
+      touch "${LOGDIR}/{main,reject,panic}log"
       chown Debian-exim:adm "${LOGDIR}/mainlog"
       chmod 640 "${LOGDIR}/mainlog"
     fi
+    echo "log_file_path = $LOGDIR/%slog" > /etc/exim4/conf.d/main/99_custom_log_file_path
   fi
 fi
 
 # Check custom configuration files
-SRC_DIR="/data/conf"
+SRC_DIR="/data/exim4/conf"
 DST_DIR="/etc/exim4"
 if [ -d "${SRC_DIR}" ]; then
   cd "${SRC_DIR}"
@@ -56,7 +91,7 @@ if [ -f /run/secrets/dovecot-fqdn-cert.txt ]; then
 fi
 
 if [ -d ${CERT_DIR} ]; then
-    sed -i "s/^SERVER_CERT.*$/SERVER_CERT=$MAILSERVER_CERT/" /etc/exim4/conf.d/main/00_exim4-config_listmacrosdefs-custom
+    sed -i "s/^SERVER_CERT.*$/SERVER_CERT=$MAILSERVER_CERT/" /etc/exim4/conf.d/main/00_custom_listmacrodefs
     [ -d /data/certs/archive/$MAILSERVER_CERT ] && chmod 644 /data/certs/archive/$MAILSERVER_CERT/privkey*.pem
 else
     mkdir -p ${CERT_DIR}
@@ -66,7 +101,7 @@ fi
 if [ ! -d /proc/sys/net/ipv6 ]; then 
     grep -q disable_ipv6 /etc/exim4/* -R
     if [ $? -ne 0 ]; then
-        echo 'disable_ipv6 = true' > /etc/exim4/conf.d/main/01_custom
+        echo 'disable_ipv6 = true' > /etc/exim4/conf.d/main/99_custom_disable_ipv6
     fi
 fi
 

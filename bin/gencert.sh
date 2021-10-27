@@ -28,11 +28,7 @@ commonName = ${MAILSERVER_CERT}
 emailAddress = notme@${MAILSERVER_CERT}
 EOM
 
-echo "[*] Creating a self signed SSL certificate for Exim!"
-echo "    This may be sufficient to establish encrypted connections but for"
-echo "    secure identification you need to buy a real certificate!"
-echo "    "
-echo "    Please enter the hostname of your MTA at the Common Name (CN) prompt!"
+echo "[*] Creating a self signed SSL certificate for Exim"
 echo "    "
 
 openssl req -config $SSLEAY -x509 -newkey rsa:2048 -keyout $KEY -out $CERT -days $DAYS -nodes
@@ -42,7 +38,5 @@ rm -f $SSLEAY
 chown root:Debian-exim $KEY $CERT $DH
 chmod 640 $KEY $CERT $DH
 
-echo "[*] Done generating self signed certificates for exim!"
-echo "    Refer to the documentation and example configuration files"
-echo "    over at /usr/share/doc/exim4-base/ for an idea on how to enable TLS"
-echo "    support in your mail transfer agent."
+echo "[*] Done generating self signed certificates for exim"
+echo "    "
