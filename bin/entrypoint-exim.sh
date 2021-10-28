@@ -87,6 +87,7 @@ fi
 echo "MAIN_TLS_ENABLE      = true" > /etc/exim4/conf.d/main/00_custom_tls
 echo "MAIN_TLS_CERTIFICATE = ${CERT_DIR}/fullchain.pem" >> /etc/exim4/conf.d/main/00_custom_tls
 echo "MAIN_TLS_PRIVATEKEY  = ${CERT_DIR}/privkey.pem"   >> /etc/exim4/conf.d/main/00_custom_tls
+echo "tls_on_connect_ports  = 465"   >> /etc/exim4/conf.d/main/00_custom_tls
 
 # Check custom configuration files
 SRC_DIR="/data/exim4/conf"

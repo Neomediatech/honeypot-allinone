@@ -1,0 +1,28 @@
+warn
+	logwrite = START SESSION:   incoming connection from $sender_fullhost
+        control = allow_auth_unadvertised
+
+#require
+#        acl = dnslists_cbl
+
+warn
+	dnslists = zen.spamhaus.org
+	logwrite = $sender_host_address . ZEN says: $dnslist_domain ($dnslist_text), $dnslist_value
+
+# very bad guys
+deny
+	message  = You are DROP/EDROP. See https://www.spamhaus.org/query/ip/$sender_host_address at $dnslist_domain
+	dnslists = zen.spamhaus.org=127.0.0.9
+	logwrite = DROP-EDROP: $sender_host_address is in $dnslist_domain ($dnslist_text), $dnslist_value
+
+##############################
+#
+# RBL cbl.abuseat.org check
+#
+##############################
+defer
+        acl               = dnslists_cbl
+        message           = $acl_m_cbl_msg
+        condition         = ${if def:acl_m_dnslist_cbl_found}
+
+accept

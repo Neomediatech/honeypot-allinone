@@ -1,4 +1,29 @@
-SERVER_CERT                    = ${if exists{/servername_cert}{lsearch;/servername_cert}{CONFDIR/fullchain.pem}}
-MAIN_TLS_CERTIFICATE           = ${if exists{/servername_cert}{/data/certs/live/SERVER_CERT/fullchain.pem}{CONFDIR/fullchain.pem}}
-MAIN_TLS_PRIVATEKEY            = ${if exists{/servername_cert}{/data/certs/live/SERVER_CERT/privkey.pem}{CONFDIR/privkey.pem}}
+# the option below allow sending clear password during smtp auth with unencrypted connections (non TLS)
+AUTH_SERVER_ALLOW_NOTLS_PASSWORDS = true
+MAIN_KEEP_ENVIRONMENT = 
+MAIN_ACL_CHECK_DATA   = CONFDIR/conf.d/acl/acl_check_data
+MAIN_ACL_CHECK_RCPT   = CONFDIR/conf.d/acl/acl_check_rcpt
+MAIN_LOG_SELECTOR = -retry_defer -skip_delivery -host_lookup_failed \
+                  +smtp_confirmation -queue_run \
+                  +sender_on_delivery +return_path_on_delivery +delivery_size \
+                  +received_recipients +all_parents +address_rewrite \
+                  +tls_certificate_verified +tls_peerdn \
+                  +smtp_protocol_error +smtp_syntax_error \
+                  +deliver_time +queue_time \
+                  -lost_incoming_connection \
+                  +incoming_interface +tls_sni -rejected_header
+
+acl_smtp_connect      = CONFDIR/conf.d/acl/acl_smtp_connect
+acl_smtp_quit         = CONFDIR/conf.d/acl/acl_check_quit
+
+auth_advertise_hosts  = *
+av_scanner            = 
+daemon_smtp_ports     = 25 : 587 : 465
+disable_ipv6          = true
+rfc1413_hosts         = *
+rfc1413_query_timeout = 0s
+sender_unqualified_hosts = *
+smtp_banner           = ESMTP MAIL service ready at $tod_full
+smtp_enforce_sync = false
+system_filter_directory_transport = local_copy
 

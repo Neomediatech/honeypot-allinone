@@ -1,0 +1,23 @@
+# put server_condition = true if you want to always accept every authentication, regardless of user/password given
+# useful if you want to get also this emails for antispam learning.
+# Remember to trash the email after (on exim filter filter or in another way)
+
+fake_plain:
+	driver = plaintext
+	public_name = PLAIN
+#	server_condition = true
+	server_condition = false
+	server_set_id = $auth2
+	server_prompts = :
+	server_advertise_condition = true
+	server_debug_print = $auth2 
+
+fake_login:
+	driver = plaintext
+	public_name = LOGIN
+	server_prompts = "Username:: : Password::"
+#	server_condition = true
+	server_condition = false
+	server_set_id = $auth1
+	server_advertise_condition = true
+	server_debug_print = $auth2 $auth1
