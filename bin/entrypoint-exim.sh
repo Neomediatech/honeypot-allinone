@@ -56,13 +56,37 @@ if [ "$HONEYPOT" == "false" ]; then
     fi
 
     if [ ! -f "${LOGDIR}/mainlog" ]; then
-      touch "${LOGDIR}/{main,reject,panic}log"
-      chown Debian-exim:adm "${LOGDIR}/mainlog"
+      touch "${LOGDIR}/mainlog ${LOGDIR}/rejectlog ${LOGDIR}/paniclog"
+      chown Debian-exim:adm ${LOGDIR}/mainlog ${LOGDIR}/rejectlog ${LOGDIR}/paniclog
       chmod 640 "${LOGDIR}/mainlog"
     fi
     echo "log_file_path = $LOGDIR/%slog" > /etc/exim4/conf.d/main/99_custom_log_file_path
   fi
 fi
+
+# exim does not accept exim4.filter as symbolic link, hence we copy it
+[ -f ${SRC_DIR}/exim4.filter ] && rm -f /etc/exim4/exim4.filter && cp ${SRC_DIR}/exim4.filter /etc/exim4
+
+if [ -f /run/secrets/dovecot-fqdn-cert.txt ]; then
+    MAILSERVER_CERT="$(cat /run/secrets/dovecot-fqdn-cert.txt)"
+fi
+
+[ -d /data/certs/archive/$MAILSERVER_CERT ] && chmod 644 /data/certs/archive/$MAILSERVER_CERT/privkey*.pem
+
+[ ! -d ${CERT_DIR} ] && mkdir -p ${CERT_DIR}
+[ ! -f ${CERT_DIR}/privkey.pem ] && /gencert.sh 
+
+if [ ! -d /proc/sys/net/ipv6 ]; then 
+    grep -q disable_ipv6 /etc/exim4/* -R
+    if [ $? -ne 0 ]; then
+        echo 'disable_ipv6 = true' > /etc/exim4/conf.d/main/99_custom_disable_ipv6
+    fi
+fi
+
+# TLS CERTS
+echo "MAIN_TLS_ENABLE      = true" > /etc/exim4/conf.d/main/00_custom_tls
+echo "MAIN_TLS_CERTIFICATE = ${CERT_DIR}/fullchain.pem" >> /etc/exim4/conf.d/main/00_custom_tls
+echo "MAIN_TLS_PRIVATEKEY  = ${CERT_DIR}/privkey.pem"   >> /etc/exim4/conf.d/main/00_custom_tls
 
 # Check custom configuration files
 SRC_DIR="/data/exim4/conf"
@@ -81,28 +105,6 @@ if [ -d "${SRC_DIR}" ]; then
     echo "  Add custom config file $DST_DIR/$FILE ..."
     ln -sf "$SRC_DIR/$FILE" "$DST_DIR/$FILE"
   done
-fi
-
-# exim does not accept exim4.filter as symbolic link, hence we copy it
-[ -f ${SRC_DIR}/exim4.filter ] && rm -f /etc/exim4/exim4.filter && cp ${SRC_DIR}/exim4.filter /etc/exim4
-
-if [ -f /run/secrets/dovecot-fqdn-cert.txt ]; then
-    MAILSERVER_CERT="$(cat /run/secrets/dovecot-fqdn-cert.txt)"
-fi
-
-if [ -d ${CERT_DIR} ]; then
-    sed -i "s/^SERVER_CERT.*$/SERVER_CERT=$MAILSERVER_CERT/" /etc/exim4/conf.d/main/00_custom_listmacrodefs
-    [ -d /data/certs/archive/$MAILSERVER_CERT ] && chmod 644 /data/certs/archive/$MAILSERVER_CERT/privkey*.pem
-else
-    mkdir -p ${CERT_DIR}
-fi
-[ ! -f ${CERT_DIR}/privkey.pem ] && /gencert.sh 
-
-if [ ! -d /proc/sys/net/ipv6 ]; then 
-    grep -q disable_ipv6 /etc/exim4/* -R
-    if [ $? -ne 0 ]; then
-        echo 'disable_ipv6 = true' > /etc/exim4/conf.d/main/99_custom_disable_ipv6
-    fi
 fi
 
 update-exim4.conf
