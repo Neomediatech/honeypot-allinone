@@ -1,0 +1,4 @@
+SERVER_CERT                    = ${if exists{/servername_cert}{lsearch;/servername_cert}{CONFDIR/fullchain.pem}}
+MAIN_TLS_CERTIFICATE           = ${if exists{/servername_cert}{/data/certs/live/SERVER_CERT/fullchain.pem}{CONFDIR/fullchain.pem}}
+MAIN_TLS_PRIVATEKEY            = ${if exists{/servername_cert}{/data/certs/live/SERVER_CERT/privkey.pem}{CONFDIR/privkey.pem}}
+
