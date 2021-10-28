@@ -1,7 +1,7 @@
 FROM neomediatech/ubuntu-base:20.04
-ENV VERSION=2021.1001 \
+ENV VERSION=2021.1027 \
     DCC_VERSION=2.3.168 \
-    SERVICE=honeypot
+    SERVICE=honeypot-allinone
 
 LABEL maintainer="docker-dario@neomediatech.it" \ 
       org.label-schema.version=$VERSION \
@@ -34,8 +34,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     pip install setuptools && \
     pip install wheel && \
     pip install pyzor && \
-    sed -i 's/\.iteritems/\.items/' /usr/local/lib/python3.8/dist-packages/pyzor/client.py && \
-    sed -i 's/ xrange(/ range(/' /usr/local/lib/python3.8/dist-packages/pyzor/digest.py && \
+    PY_VER="$(python3 -V|cut -d " " -f2|cut -d. -f1,2)" && \
+    sed -i 's/\.iteritems/\.items/' /usr/local/lib/python${PY_VER}/dist-packages/pyzor/client.py && \
+    sed -i 's/ xrange(/ range(/' /usr/local/lib/python${PY_VER}/dist-packages/pyzor/digest.py && \
     addgroup razor && \
     adduser --gecos "razor antispam" --ingroup razor --disabled-password razor && \
     curl https://www.dcc-servers.net/dcc/source/old/dcc-${DCC_VERSION}.tar.Z | tar xzf - -C /tmp && ls -l /tmp && \
@@ -64,7 +65,7 @@ RUN virtualenv /opt/opencanary/virtualenv && \
     cp /opt/opencanary/virtualenv/lib/python${PY_VER}/site-packages/opencanary/logger.py \
        /opt/opencanary/virtualenv/lib/python${PY_VER}/site-packages/opencanary/logger.py.orig && \
     ln -s /opt/opencanary/virtualenv/lib/python${PY_VER} /opt/opencanary/virtualenv/lib/python && \
-    apt-get purge -yq binutils cpp gcc libc6-dev linux-libc-dev make build-essential libpcap-dev libffi-dev libssl-dev python-dev && \
+    apt-get purge -yq binutils cpp gcc g++ libc6-dev linux-libc-dev make build-essential libpcap-dev libffi-dev libssl-dev python-dev && \
     apt-get -y autoremove --purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/log/* /var/tmp/* /usr/share/man/??_* /usr/share/man/?? \
@@ -85,7 +86,8 @@ WORKDIR /srv/scripts
 COPY bin/* ./
 RUN chmod +x entrypoint.sh entrypoint-rspamd.sh entrypoint-exim.sh entrypoint-clamav.sh entrypoint-dovecot.sh \
     gencert.sh razorfy.pl startcanary.sh && \
-    cp digest.py /usr/local/lib/python/dist-packages/pyzor/digest.py
+    PY_VER="$(python3 -V|cut -d " " -f2|cut -d. -f1,2)" && \
+    cp digest.py /usr/local/lib/python${PY_VER}/dist-packages/pyzor/digest.py
 
 WORKDIR /
 EXPOSE 53 5953 5954 11342 10030 3310 25 465 587
