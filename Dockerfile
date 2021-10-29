@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     clamav clamav-daemon clamav-freshclam clamav-unofficial-sigs \
     mariadb-client exim4-daemon-heavy libswitch-perl openssl \
     sudo \
-    virtualenv \
+    virtualenv g++ gcc \
     rspamd && \
     pip install setuptools && \
     pip install wheel && \
@@ -50,13 +50,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     rm -rf /etc/dovecot && mkdir -p /srv/mail && chown vmail:vmail /srv/mail && \
     make-ssl-cert generate-default-snakeoil && \
     mkdir /etc/dovecot && ln -s /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/dovecot/fullchain.pem && \
-    ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem 
-RUN mkdir -p /opt/opencanary && \
+    ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem && \
+    mkdir -p /opt/opencanary && \
     apt-get install -y --no-install-suggests \
-    python3-dev python3-pip python3-virtualenv python3-venv python3-scapy python3-wheel libssl-dev libpcap-dev samba 
-RUN apt-get install -y --no-install-recommends --no-install-suggests \
-    g++ gcc
-RUN virtualenv /opt/opencanary/virtualenv && \
+    python3-dev python3-pip python3-virtualenv python3-venv python3-scapy python3-wheel libssl-dev libpcap-dev samba && \
+    virtualenv /opt/opencanary/virtualenv && \
     . /opt/opencanary/virtualenv/bin/activate && \
     pip install pip --upgrade && \
     pip install opencanary scapy pcapy && \

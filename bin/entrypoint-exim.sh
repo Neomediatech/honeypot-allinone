@@ -74,7 +74,7 @@ fi
 [ -d /data/certs/archive/$MAILSERVER_CERT ] && chmod 644 /data/certs/archive/$MAILSERVER_CERT/privkey*.pem
 
 [ ! -d ${CERT_DIR} ] && mkdir -p ${CERT_DIR}
-[ ! -f ${CERT_DIR}/privkey.pem ] && /gencert.sh 
+[ ! -f ${CERT_DIR}/privkey.pem ] && /srv/scripts/gencert.sh 
 
 if [ ! -d /proc/sys/net/ipv6 ]; then 
     grep -q disable_ipv6 /etc/exim4/* -R
