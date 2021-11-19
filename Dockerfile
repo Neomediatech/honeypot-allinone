@@ -80,8 +80,7 @@ COPY conf/dovecot/* /etc/dovecot/
 COPY conf/opencanary/opencanary.conf /root/.opencanary.conf
 COPY bin/opencanary/logger.py /opt/opencanary/virtualenv/lib/python/site-packages/opencanary/logger.py
 
-COPY conf/exim4/* /etc/exim4/
-COPY conf/exim4/conf.d/main/* /etc/exim4/conf.d/main/
+COPY conf/exim4/conf.d/ /etc/exim4/conf.d/
 
 WORKDIR /srv/scripts
 COPY bin/* ./
