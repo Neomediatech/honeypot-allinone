@@ -2,5 +2,3 @@ warn
         set acl_m_drop = 1
 	
 accept
-	#recipients = CONFDIR/blackhole_recipients
-	
