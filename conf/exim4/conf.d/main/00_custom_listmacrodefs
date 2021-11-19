@@ -1,4 +1,5 @@
 # the option below allow sending clear password during smtp auth with unencrypted connections (non TLS)
+CONFDIR=/etc/exim4
 AUTH_SERVER_ALLOW_NOTLS_PASSWORDS = true
 MAIN_KEEP_ENVIRONMENT = 
 MAIN_ACL_CHECK_DATA   = CONFDIR/conf.d/acl/acl_check_data
