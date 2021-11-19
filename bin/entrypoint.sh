@@ -97,7 +97,7 @@ echo $SEP
 echo "running $NAME..."
 
 sysctl net.core.somaxconn=511 || ok=1
-redis-server &
+redis-server --port 6380 &
 echo -e "\n"
 
 # ------------------
