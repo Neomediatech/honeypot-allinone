@@ -64,9 +64,6 @@ if [ "$HONEYPOT" == "false" ]; then
   fi
 fi
 
-# exim does not accept exim4.filter as symbolic link, hence we copy it
-[ -f ${SRC_DIR}/exim4.filter ] && rm -f /etc/exim4/exim4.filter && cp ${SRC_DIR}/exim4.filter /etc/exim4
-
 if [ -f /run/secrets/dovecot-fqdn-cert.txt ]; then
     MAILSERVER_CERT="$(cat /run/secrets/dovecot-fqdn-cert.txt)"
 fi
@@ -107,6 +104,9 @@ if [ -d "${SRC_DIR}" ]; then
     ln -sf "$SRC_DIR/$FILE" "$DST_DIR/$FILE"
   done
 fi
+
+# exim does not accept exim4.filter as symbolic link, hence we copy it
+[ -f ${SRC_DIR}/exim4.filter ] && rm -f /etc/exim4/exim4.filter && cp ${SRC_DIR}/exim4.filter /etc/exim4
 
 update-exim4.conf
 
