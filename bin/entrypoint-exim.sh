@@ -2,7 +2,7 @@
 
 MAILSERVER_CERT=${MAILSERVER_CERT:-noservername.domain.tld}
 CERT_DIR="/data/certs/live/${MAILSERVER_CERT}"
-LOGDIR=${LOGS_PATH:-/data/log}
+LOGDIR="/var/log/exim4"
 HONEYPOT=${HONEYPOT:-false}
 
 cat > /etc/exim4/update-exim4.conf.conf <<EOM
