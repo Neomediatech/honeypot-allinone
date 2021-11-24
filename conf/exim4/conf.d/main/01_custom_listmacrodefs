@@ -1,0 +1,5 @@
+# If you set this parameter to "true" every email will be kept in "/tmp/Maildir" directory.
+# !!! PAY ATTENTION! EVERY EMAIL WILL BE KEPT!!!
+# you can bind mount the file to set your custom option, 
+#  for example: docker run ..bla bla.. -v /some/path/01_custom_listmacrodefs:/etc/exim4/conf.d/main/01_custom_listmacrodefs
+KEEP_MAIL_FOR_ANALYSIS = false

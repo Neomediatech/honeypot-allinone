@@ -160,6 +160,8 @@ echo $SEP
 echo "running $NAME..."
 
 ./entrypoint-exim.sh
+mkdir -p /var/log/exim4 /var/spool/exim4
+chown Debian-exim:Debian-exim /var/log/exim4 /var/spool/exim4
 /usr/sbin/exim4 -bd -q1m
 echo -e "\n"
 

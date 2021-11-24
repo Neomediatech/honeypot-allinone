@@ -1,0 +1,20 @@
+keep_for_analysis:
+  debug_print = "T: keep_for_analysis"
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+  directory = /tmp/Maildir/
+  maildir_format
+  mode = 0666
+  mode_fail_narrower = false
+  user = vmail
+  group = vmail
+  headers_remove = x-rspamd-bar:x-rspamd-score:x-rspamd-report:x-rspamd-status:x-rspamd-action:x-report-id:x-spam-score:x-spam-report
+  headers_add = ${if def:acl_m_rspamd_report {X-Spam-Report: $acl_m_rspamd_report}}
+  headers_add = ${if def:acl_m_rspamd_score {X-Spam-Score: $acl_m_rspamd_score}}
+  headers_add = ${if def:acl_m_rspamd_score {X-RSpamd-Score: $acl_m_rspamd_score}}
+  #headers_add = ${if def:acl_m_rspamd_report {X-RSpamd-Report: $acl_m_rspamd_report}}
+  headers_add = ${if def:acl_m_rspamd_action {X-RSpamd-Action: $acl_m_rspamd_action}}
+  headers_add = ${if def:acl_m_rspamd_status {X-RSpamd-Status: $acl_m_rspamd_status}}
+

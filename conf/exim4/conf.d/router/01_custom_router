@@ -1,0 +1,17 @@
+keep_for_analysis:
+       debug_print = "R: keep_for_analysis for $local_part@$domain"
+       driver = accept
+       transport = keep_for_analysis
+       no_verify
+       no_expn
+       no_more
+       condition = ${if bool{KEEP_MAIL_FOR_ANALYSIS}{true}{false}}
+
+trash_everything:
+	debug_print = "R: trash_everything for $local_part@$domain"
+	driver = redirect
+	data = :blackhole:
+	no_verify
+	no_expn
+	no_more
+

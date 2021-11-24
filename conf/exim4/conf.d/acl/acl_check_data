@@ -14,6 +14,10 @@ warn
     logwrite = RSPAMD SCORE: $spam_score ($spam_bar). Action: $spam_action
     logwrite = $spam_report
     set acl_m_rspamd_score_int = $spam_score_int
+    set acl_m_rspamd_action    = $spam_action
+    set acl_m_rspamd_score     = $spam_score
+    set acl_m_rspamd_report    = $spam_report
+    set acl_m_rspamd_bar       = $spam_bar
 
 # no matter if email is good or bad, we are a honeypot and no real delivery will happen
 warn

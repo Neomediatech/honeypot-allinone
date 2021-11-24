@@ -2,8 +2,8 @@
 CONFDIR=/etc/exim4
 AUTH_SERVER_ALLOW_NOTLS_PASSWORDS = true
 MAIN_KEEP_ENVIRONMENT = 
-MAIN_ACL_CHECK_DATA   = CONFDIR/conf.d/acl/acl_check_data
-MAIN_ACL_CHECK_RCPT   = CONFDIR/conf.d/acl/acl_check_rcpt
+CHECK_DATA_LOCAL_ACL_FILE = CONFDIR/conf.d/acl/acl_check_data
+CHECK_RCPT_LOCAL_ACL_FILE = CONFDIR/conf.d/acl/acl_check_rcpt
 MAIN_LOG_SELECTOR = -retry_defer -skip_delivery -host_lookup_failed \
                   +smtp_confirmation -queue_run \
                   +sender_on_delivery +return_path_on_delivery +delivery_size \
@@ -14,8 +14,9 @@ MAIN_LOG_SELECTOR = -retry_defer -skip_delivery -host_lookup_failed \
                   -lost_incoming_connection \
                   +incoming_interface +tls_sni -rejected_header
 
-acl_smtp_connect      = CONFDIR/conf.d/acl/acl_smtp_connect
-acl_smtp_quit         = CONFDIR/conf.d/acl/acl_check_quit
+acl_smtp_connect = acl_smtp_connect
+acl_smtp_quit    = acl_check_quit
+MAIN_ACL_CHECK_RCPT = acl_check_rcpt_custom
 
 auth_advertise_hosts  = *
 av_scanner            = 
@@ -27,4 +28,6 @@ sender_unqualified_hosts = *
 smtp_banner           = ESMTP MAIL service ready at $tod_full
 smtp_enforce_sync = false
 system_filter_directory_transport = local_copy
+
+spamd_address = 127.0.0.1 11333 variant=rspamd
 

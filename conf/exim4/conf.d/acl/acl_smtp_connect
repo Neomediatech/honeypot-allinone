@@ -1,3 +1,5 @@
+acl_smtp_connect:
+
 warn
 	logwrite = START SESSION:   incoming connection from $sender_fullhost
         control = allow_auth_unadvertised
