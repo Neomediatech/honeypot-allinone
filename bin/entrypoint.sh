@@ -101,35 +101,6 @@ redis-server --port 6380 &
 echo -e "\n"
 
 # ------------------
-#  CLAMAV
-
-NAME="clamav"
-echo $SEP
-echo "running $NAME..."
-
-mkdir -p /var/log/clamav /run/clamav
-chown -R clamav:clamav /var/log/clamav/ /run/clamav/
-#sed -i 's/DatabaseDirectory .*$/DatabaseDirectory \/data\/clamav\/defs/' /etc/clamav/clamd.conf
-#sed -i 's/DatabaseDirectory .*$/DatabaseDirectory \/data\/clamav\/defs/' /etc/clamav/freshclam.conf
-./entrypoint-clamav.sh
-freshclam
-freshclam --daemon
-clamd
-echo -e "\n"
-
-# ------------------
-#  RSPAMD
-
-NAME="rspamd"
-echo $SEP
-echo "running $NAME..."
-
-./entrypoint-rspamd.sh
-mkdir -p /run/rspamd/ && chown _rspamd:_rspamd /run/rspamd/
-rspamd -u _rspamd -g _rspamd
-echo -e "\n"
-
-# ------------------
 #  DOVECOT
 
 NAME="dovecot"
@@ -157,11 +128,12 @@ NAME="php-fpm7.4"
 echo $SEP
 echo "running $NAME..."
 
+./entrypoint-php-fpm.sh
 $NAME
 echo -e "\n"
 
 # ------------------
-#  PHP-FPM
+#  NGINX
 
 NAME="nginx"
 echo $SEP
@@ -169,6 +141,35 @@ echo "running $NAME..."
 
 ./entrypoint-nginx.sh
 $NAME
+echo -e "\n"
+
+# ------------------
+#  CLAMAV
+
+NAME="clamav"
+echo $SEP
+echo "running $NAME..."
+
+mkdir -p /var/log/clamav /run/clamav
+chown -R clamav:clamav /var/log/clamav/ /run/clamav/
+#sed -i 's/DatabaseDirectory .*$/DatabaseDirectory \/data\/clamav\/defs/' /etc/clamav/clamd.conf
+#sed -i 's/DatabaseDirectory .*$/DatabaseDirectory \/data\/clamav\/defs/' /etc/clamav/freshclam.conf
+./entrypoint-clamav.sh
+freshclam
+freshclam --daemon
+clamd
+echo -e "\n"
+
+# ------------------
+#  RSPAMD
+
+NAME="rspamd"
+echo $SEP
+echo "running $NAME..."
+
+./entrypoint-rspamd.sh
+mkdir -p /run/rspamd/ && chown _rspamd:_rspamd /run/rspamd/
+rspamd -u _rspamd -g _rspamd
 echo -e "\n"
 
 # below the last service to start

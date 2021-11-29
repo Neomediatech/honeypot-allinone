@@ -1,18 +1,34 @@
 <?php
 
-include('apykey.php');
+//include('apikey.php');
 //$key = '';
+
+$apikey_file = 'apikey.php';
+
+if(file_exists($apikey_file)){
+  $keys = file($apikey_file, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
+  foreach($keys as $k){
+    if(preg_match('/(^\$key)/', $k)) {
+	eval($k);
+	break;
+    }
+  }
+} else {
+  $key = '';
+}
+
+if (isset($_SERVER['PROJECT_HONEY_POT_API_KEY']) && $_SERVER['PROJECT_HONEY_POT_API_KEY'] != '') $key = $_SERVER['PROJECT_HONEY_POT_API_KEY'];
 
 $remote_ip = $_SERVER['REMOTE_ADDR'];
 
-$file = 'http_access.log';
-$dir  = '/var/www/html';
+$file = 'http_spam_access.log';
+$dir  = '/var/log';
 $log  = $dir."/".$file;
+$err_log = $dir."/"."http_err.log";
 //echo $remote_ip . " - ";
 //include_once('httpBL.class.php');
 include('project/ProjectHoneyPot.php');
 //$bl = new httpBL();
-
 
 $php = new ProjectHoneyPot($key);
 
@@ -24,23 +40,26 @@ if (!file_exists($dir)) {
 }
 
 if(! empty($results)) {
-  if(!empty(array_filter($_REQUEST))) {
-    $req = ' request: ';
-    foreach($_REQUEST as $k => $v) {
-      $req .= $k.' => '.$v.', ';
+  if (isset($results['error'])) {
+    if (! file_exists($err_log)){
+      file_put_contents($err_log, '<?php /*'."\n", FILE_APPEND);
     }
-    $content .= $req;
+    file_put_contents($err_log, date("Y-m-d H:i:s")." - ".$remote_ip.' - error : '.$results['error']."\n", FILE_APPEND);
   } else {
-    $req = '';
-  }
-  $cats = implode(",", $results['categories']);
-  $content = date("Y-m-d H:i:s") . " - [" . $remote_ip . "] " . $cats . " score: " . $results['threat_score'] . " last_activity (days): " . $results['last_activity'];
-  $content .= " request uri: " . $_SERVER['REQUEST_URI'] . $req . "\n";
+    if(!empty(array_filter($_REQUEST))) {
+      $req = ' request: ';
+      foreach($_REQUEST as $k => $v) {
+        $req .= $k.' => '.$v.', ';
+      }
+      $content .= $req;
+    } else {
+      $req = '';
+    }
+    $cats = implode(",", $results['categories']);
+    $content = date("Y-m-d H:i:s") . " - [" . $remote_ip . "] " . $cats . " score: " . $results['threat_score'] . " last_activity (days): " . $results['last_activity'];
+    $content .= " request uri: " . $_SERVER['REQUEST_URI'] . $req . "\n";
   file_put_contents($log, $content, FILE_APPEND);
-//} else {
-//  $cats = "nessun risultato";
-//  $threat_score = -1;
-//  $last_activity = -1;
+  }
 }
 //Array ( [last_activity] => 1 [threat_score] => 19 [categories] => Array ( [0] => Suspicious [1] => Comment Spammer ) ) 
 

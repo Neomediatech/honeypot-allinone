@@ -53,6 +53,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem && \
     mkdir -p /opt/opencanary /var/log/nginx && \
     touch /var/log/nginx/access.log /var/log/nginx/error.log && \
+    rm -rf /var/www/html/ && mkdir -p /var/www/html/ && \
     apt-get install -y --no-install-suggests \
     python3-dev python3-pip python3-virtualenv python3-venv python3-scapy python3-wheel libssl-dev libpcap-dev samba \
     php7.4-fpm nginx-extras && \
@@ -85,7 +86,7 @@ COPY bin/opencanary/logger.py /opt/opencanary/virtualenv/lib/python/site-package
 COPY conf/exim4/conf.d/ /etc/exim4/conf.d/
 
 COPY conf/nginx/default /etc/nginx/sites-enabled/
-COPY conf/nginx/html/ /usr/share/nginx/html/
+COPY conf/nginx/html/ /var/www/html/
 
 WORKDIR /srv/scripts
 COPY bin/* ./
@@ -94,7 +95,7 @@ RUN chmod +x *.sh *.pl && \
     cp digest.py /usr/local/lib/python${PY_VER}/dist-packages/pyzor/digest.py
 
 WORKDIR /
-EXPOSE 53 5953 5954 11342 10030 3310 25 465 587
+EXPOSE 53 5953 5954 11342 10030 3310 25 465 587 80 443 110 143 993 995
 
 # HEALTHCHECK --interval=30s --timeout=30s --start-period=20s --retries=20 CMD nc -w 7 -zv 0.0.0.0 5953
 # need some best idea
