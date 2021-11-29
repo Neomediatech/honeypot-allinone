@@ -1,8 +1,8 @@
 <?php
 
 
-
-$key='GET YOUR APY KEY FROM projecthoneyport.org';
+//      GET YOUR APY KEY FROM projecthoneyport.org and put it below
+$key='';
 
 
 // DO NOT CHANGE ANYTHING BELOW THIS LINE
