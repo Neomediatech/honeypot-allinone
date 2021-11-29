@@ -17,14 +17,6 @@ if [ "$STDOUT_LOGGING" == "true" ]; then
   echo 'log_path = /dev/stdout' >> /etc/dovecot/dovecot.conf
   echo 'info_log_path = /dev/stdout' >> /etc/dovecot/dovecot.conf
   echo 'debug_log_path = /dev/stdout' >> /etc/dovecot/dovecot.conf
-else
-  LOGDIR="/data/log"
-  [ ! -d "${LOGDIR}" ] && mkdir -p $LOGDIR
-  LOGFILE="${LOGDIR}/dovecot.log"
-  if [ ! -f $LOGFILE ]; then
-    touch $LOGFILE
-  fi
-  chmod 666 $LOGFILE
 fi
 HOMEDIRS="${HOMEDIRS:-/data/home}"
 [ ! -d "${HOMEDIRS}" ] && mkdir -p $HOMEDIRS

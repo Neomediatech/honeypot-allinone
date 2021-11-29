@@ -150,6 +150,27 @@ echo "running $NAME..."
 ./startcanary.sh
 echo -e "\n"
 
+# ------------------
+#  PHP-FPM
+
+NAME="php-fpm7.4"
+echo $SEP
+echo "running $NAME..."
+
+$NAME
+echo -e "\n"
+
+# ------------------
+#  PHP-FPM
+
+NAME="nginx"
+echo $SEP
+echo "running $NAME..."
+
+./entrypoint-nginx.sh
+$NAME
+echo -e "\n"
+
 # below the last service to start
 
 # ------------------

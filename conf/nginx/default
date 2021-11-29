@@ -1,0 +1,73 @@
+log_format detailed '$remote_addr - $remote_user [$time_local] '
+                    '"$request" $status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" $request_length $request_time '
+                    '$upstream_response_length $upstream_response_time '
+                    '$upstream_status';
+
+server {
+    listen *:80 default_server;
+    server_tokens off;
+
+    server_name _;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.php index.html index.htm;
+        try_files /nothingspecialhere.html index.php;
+    }
+
+    location ~ ^/(android-icon-|apple-icon-|ms-icon-|favicon-).*$ {
+        root   /usr/share/nginx/html;
+        access_log     off;
+    }
+
+    location = /css/signin.css {
+        root   /usr/share/nginx/html;
+        access_log     off;
+    }
+
+#    location ~ /.* {
+#        default_type text/plain;
+#        return 200 'OK';
+#    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    location ~ \.php$ {
+        root           /usr/share/nginx/html;
+        try_files /index.php =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param SERVER_NAME $server_name;
+        include        fastcgi_params;
+    }
+
+    location = /favicon.ico {
+        access_log     off;
+        log_not_found  off;
+        expires        max;
+    }
+
+    location = /robots.txt {
+        allow          all;
+        access_log     off;
+        log_not_found  off;
+    }
+
+    access_log  /var/log/nginx_detailed.log detailed;
+    access_log  /var/log/nginx_access.log;
+    error_log   /var/log/nginx_error.log;
+}
+
