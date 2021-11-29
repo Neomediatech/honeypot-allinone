@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -n ${PROJECT_HONEY_POT_API_KEY} ]; then
+if [ -n "${PROJECT_HONEY_POT_API_KEY}" ]; then
   sed -i '/env\[PROJECT_HONEY_POT_API_KEY\] = .*/d' /etc/php/7.4/fpm/pool.d/www.conf
   echo "env[PROJECT_HONEY_POT_API_KEY] = ${PROJECT_HONEY_POT_API_KEY}" >> /etc/php/7.4/fpm/pool.d/www.conf
 fi

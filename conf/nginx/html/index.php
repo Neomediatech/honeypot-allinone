@@ -30,40 +30,42 @@ $err_log = $dir."/"."http_err.log";
 include('project/ProjectHoneyPot.php');
 //$bl = new httpBL();
 
-$php = new ProjectHoneyPot($key);
+if ($key != '') {
+  $php = new ProjectHoneyPot($key);
 
-//$results = $php->query('182.52.51.155');
-$results = $php->query($remote_ip);
+  //$results = $php->query('182.52.51.155');
+  $results = $php->query($remote_ip);
 
-if (!file_exists($dir)) {
-  mkdir ( $dir, 0777, TRUE); 
-}
-
-if(! empty($results)) {
-  if (isset($results['error'])) {
-    if (! file_exists($err_log)){
-      file_put_contents($err_log, '<?php /*'."\n", FILE_APPEND);
-    }
-    file_put_contents($err_log, date("Y-m-d H:i:s")." - ".$remote_ip.' - error : '.$results['error']."\n", FILE_APPEND);
-  } else {
-    if(!empty(array_filter($_REQUEST))) {
-      $req = ' request: ';
-      foreach($_REQUEST as $k => $v) {
-        $req .= $k.' => '.$v.', ';
-      }
-      $content .= $req;
-    } else {
-      $req = '';
-    }
-    $cats = implode(",", $results['categories']);
-    $content = date("Y-m-d H:i:s") . " - [" . $remote_ip . "] " . $cats . " score: " . $results['threat_score'] . " last_activity (days): " . $results['last_activity'];
-    $content .= " request uri: " . $_SERVER['REQUEST_URI'] . $req . "\n";
-  file_put_contents($log, $content, FILE_APPEND);
+  if (!file_exists($dir)) {
+    mkdir ( $dir, 0777, TRUE); 
   }
-}
+
+  if(! empty($results)) {
+    if (isset($results['error'])) {
+      if (! file_exists($err_log)){
+        file_put_contents($err_log, '<?php /*'."\n", FILE_APPEND);
+      }
+      file_put_contents($err_log, date("Y-m-d H:i:s")." - ".$remote_ip.' - error : '.$results['error']."\n", FILE_APPEND);
+    } else {
+      if(!empty(array_filter($_REQUEST))) {
+        $req = ' request: ';
+        foreach($_REQUEST as $k => $v) {
+          $req .= $k.' => '.$v.', ';
+        }
+        $content .= $req;
+      } else {
+        $req = '';
+      }
+      $cats = implode(",", $results['categories']);
+      $content = date("Y-m-d H:i:s") . " - [" . $remote_ip . "] " . $cats . " score: " . $results['threat_score'] . " last_activity (days): " . $results['last_activity'];
+      $content .= " request uri: " . $_SERVER['REQUEST_URI'] . $req . "\n";
+    file_put_contents($log, $content, FILE_APPEND);
+    }
+  }
 //Array ( [last_activity] => 1 [threat_score] => 19 [categories] => Array ( [0] => Suspicious [1] => Comment Spammer ) ) 
 
 //print_r($results);
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -94,6 +96,10 @@ if(! empty($results)) {
     <title>Restricted access</title>
   </head>
   <body class="text-center">
+<?php
+if ($key == '') { ?>
+<p>Sorry, this site is temporary unavailable</p>
+<?php } else { ?>
     <form class="form-signin" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
       <img class="mb-4" src="/android-icon-192x192.png" alt="">
       <h1>Authorized only</h1>
@@ -110,6 +116,7 @@ if(! empty($results)) {
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
       <p class="mt-5 mb-3 text-muted">&copy; 2018-∞</p>
     </form>
+<?php { ?>
   </body>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
