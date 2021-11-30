@@ -43,5 +43,5 @@ if [ ! -f "${COMMONDIR}/dh-dovecot.pem" ]; then
 fi
 
 if [ "$STDOUT_LOGGING" != "true" ]; then
-  exec tail -f "$LOGFILE" &
+  exec tail -F /var/log/dovecot.log &
 fi

@@ -3,7 +3,6 @@
 MAILSERVER_CERT=${MAILSERVER_CERT:-noservername.domain.tld}
 CERT_DIR="/data/certs/live/${MAILSERVER_CERT}"
 LOGDIR="/var/log/exim4"
-HONEYPOT=${HONEYPOT:-false}
 
 cat > /etc/exim4/update-exim4.conf.conf <<EOM
 # /etc/exim4/update-exim4.conf.conf
@@ -39,29 +38,26 @@ dc_mailname_in_oh='true'
 dc_localdelivery='maildir_home'
 EOM
 
-if [ "$HONEYPOT" == "false" ]; then
-  if [ "$LOGDIR" == "stdout" ]; then
-    mkdir -p /var/log/exim4
-    rm -f /var/log/exim4/{main,reject,panic}log
-    ln -s /dev/stdout /var/log/exim4/mainlog
-    ln -s /dev/stderr /var/log/exim4/rejectlog
-    ln -s /dev/stderr /var/log/exim4/paniclog
-    echo 'log_file_path = syslog' > /etc/exim4/conf.d/main/99_custom_log_file_path
-  else
-    if [ ! -d "${LOGDIR}" ]; then
-      mkdir -p "${LOGDIR}"
-      #chown Debian-exim:adm "${LOGDIR}"
-      #chmod 750 "${LOGDIR}"
-      #chmod g+s "${LOGDIR}"
-    fi
-
-    if [ ! -f "${LOGDIR}/mainlog" ]; then
-      touch "${LOGDIR}/mainlog ${LOGDIR}/rejectlog ${LOGDIR}/paniclog"
-      chown Debian-exim:adm ${LOGDIR}/mainlog ${LOGDIR}/rejectlog ${LOGDIR}/paniclog
-      chmod 640 "${LOGDIR}/mainlog"
-    fi
-    echo "log_file_path = $LOGDIR/%slog" > /etc/exim4/conf.d/main/99_custom_log_file_path
+if [ "$LOGDIR" == "stdout" ]; then
+  mkdir -p /var/log/exim4
+  rm -f "$LOGDIR"/{main,reject,panic}log
+  ln -s /dev/stdout /var/log/exim4/mainlog
+  ln -s /dev/stderr /var/log/exim4/rejectlog
+  ln -s /dev/stderr /var/log/exim4/paniclog
+  echo 'log_file_path = syslog' > /etc/exim4/conf.d/main/99_custom_log_file_path
+else
+  if [ ! -d "${LOGDIR}" ]; then
+    mkdir -p "${LOGDIR}"
+    #chown Debian-exim:adm "${LOGDIR}"
+    #chmod 750 "${LOGDIR}"
+    #chmod g+s "${LOGDIR}"
   fi
+  if [ ! -f "${LOGDIR}/mainlog" ]; then
+    touch "${LOGDIR}/mainlog ${LOGDIR}/rejectlog ${LOGDIR}/paniclog"
+    chown Debian-exim:adm ${LOGDIR}/mainlog ${LOGDIR}/rejectlog ${LOGDIR}/paniclog
+    chmod 640 "${LOGDIR}/mainlog"
+  fi
+  echo "log_file_path = $LOGDIR/%slog" > /etc/exim4/conf.d/main/99_custom_log_file_path
 fi
 
 if [ -f /run/secrets/dovecot-fqdn-cert.txt ]; then

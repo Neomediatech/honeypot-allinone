@@ -39,7 +39,7 @@ fi
 #fi
 
 # Check custom configuration files
-SRC_DIR="/data/web"
+SRC_DIR="/data/web/sites-enabled"
 DST_DIR="/etc/nginx/sites-enabled"
 if [ -d "${SRC_DIR}" ]; then
   cd "${SRC_DIR}"
@@ -58,7 +58,7 @@ if [ -d "${SRC_DIR}" ]; then
 fi
 
 # Check custom snippets
-SRC_DIR="/snippets"
+SRC_DIR="/data/web/snippets"
 DST_DIR="/etc/nginx/snippets"
 if [ -d "${SRC_DIR}" ]; then
   cd "${SRC_DIR}"
@@ -76,7 +76,26 @@ if [ -d "${SRC_DIR}" ]; then
   done
 fi
 
+# Check custom website data
+SRC_DIR="/data/web/www"
+DST_DIR="/var/www"
+if [ -d "${SRC_DIR}" ]; then
+  cd "${SRC_DIR}"
+  for FILE in $(find . -type f|cut -b 3-); do
+    DIR_FILE="$(dirname "$FILE")"
+    if [ ! -d "$DST_DIR/$DIR_FILE" ]; then
+      mkdir -p "$DST_DIR/$DIR_FILE"
+    fi
+    if [ -f "$DST_DIR/$FILE}" ]; then
+      echo "  WARNING: $DST_DIR/$FILE already exists and will be overriden"
+      rm -f "$DST_DIR/$FILE"
+    fi
+    echo "  Add custom file $DST_DIR/$FILE ..."
+    ln -sf "$SRC_DIR/$FILE" "$DST_DIR/$FILE"
+  done
+fi
+
 if [ "$STDOUT_LOGGING" != "true" ]; then
   exec tail -F ${LOGFILE} &
 fi
-exec "$@"
+#exec "$@"

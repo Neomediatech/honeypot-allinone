@@ -10,6 +10,19 @@ chmod 777 /data /data/log
 
 SEP="----------------------------------"
 
+cd /srv/scripts
+
+# ------------------
+#  CRON
+
+NAME="cron"
+echo $SEP
+echo "running $NAME..."
+
+./entrypoint-cron.sh
+$NAME
+echo -e "\n"
+
 # ------------------
 #  BIND9
 

@@ -56,7 +56,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     rm -rf /var/www/html/ && mkdir -p /var/www/html/ && \
     apt-get install -y --no-install-suggests \
     python3-dev python3-pip python3-virtualenv python3-venv python3-scapy python3-wheel libssl-dev libpcap-dev samba \
-    php7.4-fpm nginx-extras && \
+    php7.4-fpm nginx-extras cron && \
     virtualenv /opt/opencanary/virtualenv && \
     . /opt/opencanary/virtualenv/bin/activate && \
     pip install pip --upgrade && \
@@ -70,7 +70,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     apt-get -y autoremove --purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/log/* /var/tmp/* /usr/share/man/??_* /usr/share/man/?? \
-           /usr/local/share/doc /usr/local/share/man /root/.cache
+           /usr/local/share/doc /usr/local/share/man /root/.cache \
+	   /etc/cron.d /etc/cron.daily /etc/cron.hourly /etc/cron.monthly /etc/cron.weekly
 
 COPY --chown=razor:razor conf/razor-agent.conf /home/razor/.razor
 
