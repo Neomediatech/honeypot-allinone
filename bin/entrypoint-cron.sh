@@ -11,6 +11,10 @@ if [ -f "$SRC_CRON" ]; then
   if [ $? -ne 0 ]; then
     crontab "$SRC_CRON"
   fi
+else
+  mkdir -p "$SRC_CRON"
+  echo "#" >> "$SRC_CRON"
+  md5sum "$SRC_CRON" > "$TMPDIR"/orig-cron.md5
 fi
 
 # run this script to check new crontabs
