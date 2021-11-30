@@ -18,8 +18,8 @@ If you wish to run custom crontabs create the file `/data/crontabs/custom.cron` 
 # |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
 # |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
 # |  |  |  |  |
-# *  *  *  *  * user-name command to be executed
-  *  *  *  *  * root      /usr/bin/date >> /tmp/date.log
-  30 20 *  *  * root      /other/command
+# *  *  *  *  * command to be executed
+  *  *  *  *  * /usr/bin/date >> /tmp/date.log
+  30 20 *  *  * /other/command
 ```
 
