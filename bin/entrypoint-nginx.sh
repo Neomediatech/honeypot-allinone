@@ -97,5 +97,5 @@ fi
 
 if [ "$STDOUT_LOGGING" != "true" ]; then
   exec tail -F ${LOGFILE} &
+  exec tail -F ${LOGDIR}/nginx_*.log &
 fi
-#exec "$@"

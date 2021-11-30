@@ -16,3 +16,5 @@ crontab "$SRC_CRON"
 # run this script to check new crontabs
 /srv/scripts/check-cron.sh &
 
+tail -F /var/log/cron.log &
+
