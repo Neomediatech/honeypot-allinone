@@ -1,5 +1,9 @@
 acl_smtp_connect:
 
+.ifdef PRE_ACL_SMTP_CONNECT_LOCAL_FILE
+.include PRE_ACL_SMTP_CONNECT_LOCAL_FILE
+.endif
+
 warn
 	logwrite = START SESSION:   incoming connection from $sender_fullhost
         control = allow_auth_unadvertised

@@ -28,6 +28,9 @@ ATTENTION! Work in progress, this image can eat your keyboard, dont't use it unt
 | VNC         | 5900       | OpenCanary |
 | HTTP/HTTPS  | 80/443     | Nginx/PHP-FPM |
 
+## Custom Exim4 ACL
+You can ovveride the file conf.d/acl/acl_pre_smtp_connect with your own acl defiintions. Will be included at the begin of `acl_smtp_connect`
+
 ## Custom crontabs 
 If you wish to run custom crontabs create the file `/data/crontabs/custom.cron` and put every crontab you want, for example:  
 ```

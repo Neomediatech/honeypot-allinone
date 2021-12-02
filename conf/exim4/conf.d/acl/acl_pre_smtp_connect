@@ -1,0 +1,7 @@
+# customise you acl bind mounting a file with this name
+# or putting a file (with the same name) in /data/exim4/conf/conf.d/acl/
+
+#warn
+#	logwrite = some word
+
+
