@@ -161,16 +161,23 @@ echo -e "\n"
 
 NAME="clamav"
 echo $SEP
-echo "running $NAME..."
 
-mkdir -p /var/log/clamav /run/clamav
-chown -R clamav:clamav /var/log/clamav/ /run/clamav/
-#sed -i 's/DatabaseDirectory .*$/DatabaseDirectory \/data\/clamav\/defs/' /etc/clamav/clamd.conf
-#sed -i 's/DatabaseDirectory .*$/DatabaseDirectory \/data\/clamav\/defs/' /etc/clamav/freshclam.conf
-./entrypoint-clamav.sh
-freshclam
-freshclam --daemon
-clamd
+if [ -n "$CLAMAV_ENABLED" ] && [ "$CLAMAV_ENABLED" = "yes" ]; then
+	echo "running $NAME..."
+
+	mkdir -p /var/log/clamav /run/clamav
+	chown -R clamav:clamav /var/log/clamav/ /run/clamav/
+	#sed -i 's/DatabaseDirectory .*$/DatabaseDirectory \/data\/clamav\/defs/' /etc/clamav/clamd.conf
+	#sed -i 's/DatabaseDirectory .*$/DatabaseDirectory \/data\/clamav\/defs/' /etc/clamav/freshclam.conf
+	./entrypoint-clamav.sh
+	freshclam
+	freshclam --daemon
+	clamd
+else
+	mkdir -p "/data/rspamd/conf/local.d"
+	echo "$NAME DISABLED by \$CLAMAV_ENABLED docker ENV variable"
+	echo "# $NAME DISABLED by \$CLAMAV_ENABLED=$CLAMAV_ENABLED docker ENV variable" > "/data/rspamd/conf/local.d/antivirus.conf"
+fi
 echo -e "\n"
 
 # ------------------
