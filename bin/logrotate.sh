@@ -20,7 +20,7 @@ log_rotate(){
 		EXT=${LOG_R:(-4)}
 		if [ "$EXT" = ".log" ] || [[ "$LOG_R" =~ (.*mainlog$|.*rejectlog$|.*paniclog$) ]] ; then
 			size="$(stat -c %s "$LOG_R")"
-			if [ -s "$LOG_R" ] && [ $size -gt 128000 ]; then
+			if [ -s "$LOG_R" ] && [ $size -gt 1048576 ]; then
 				for num in $(seq 10 -1 1); do
 					if [ -f "$LOG_R".$num.gz ]; then
 						mv "$LOG_R".$num.gz "$LOG_R".$[$num+1].gz
@@ -34,7 +34,7 @@ log_rotate(){
 				fi
 			else
 				if [ -f "$LOG_R" ]; then
-					log "$LOG_R has size < 128k, not rotating"
+					log "$LOG_R has size < 1 Mb, not rotating"
 				else
 					log "$LOG_R does not exists"
 				fi
