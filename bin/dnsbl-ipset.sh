@@ -955,10 +955,10 @@ blacklist() {
 		if [ ${BLACKLIST_IPSET_COMMENTS} -eq 1 ]
 			then
 			#ipset --add ${BLACKLIST_IPSET} ${ip} ${BLACKLIST_IPSET_OPTIONS} comment "${comment:0:255}" || exit 1
-			$redis_cmd -n ${BLACKLIST_IPSET} SET ${ip}:comment "${comment}" ${BLACKLIST_IPSET_OPTIONS} || exit 1
+			$redis_cmd -n ${BLACKLIST_IPSET} SET ${ip} "$(date) --- ${comment}" ${BLACKLIST_IPSET_OPTIONS} || exit 1
 		else
 			#ipset --add ${BLACKLIST_IPSET} ${ip} ${BLACKLIST_IPSET_OPTIONS} || exit 1
-			$redis_cmd -n ${BLACKLIST_IPSET} SET ${ip} ${BLACKLIST_IPSET_OPTIONS} || exit 1
+			$redis_cmd -n ${BLACKLIST_IPSET} SET ${ip} "$(date)" ${BLACKLIST_IPSET_OPTIONS} || exit 1
 		fi
 
 		return 0
@@ -993,7 +993,7 @@ generate_dnsbl_hostnames() {
 
 		# cache it
 		#ipset --add ${CACHE_IPSET} ${i} ${CACHE_IPSET_OPTIONS} || exit 1
-		$redis_cmd -n ${CACHE_IPSET} SET ${i} ${CACHE_IPSET_OPTIONS} || exit 1
+		$redis_cmd -n ${CACHE_IPSET} SET ${i} "$(date)" ${CACHE_IPSET_OPTIONS} || exit 1
 
 		while [ -f "${THROTTLE_LOCK_FILE}" ]
 		do

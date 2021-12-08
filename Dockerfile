@@ -56,7 +56,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     rm -rf /var/www/html/ && mkdir -p /var/www/html/ && \
     apt-get install -y --no-install-suggests \
     python3-dev python3-pip python3-virtualenv python3-venv python3-scapy python3-wheel libssl-dev libpcap-dev samba \
-    php7.4-fpm nginx-extras cron && \
+    php7.4-fpm nginx-extras cron whois && \
     virtualenv /opt/opencanary/virtualenv && \
     . /opt/opencanary/virtualenv/bin/activate && \
     pip install pip --upgrade && \
