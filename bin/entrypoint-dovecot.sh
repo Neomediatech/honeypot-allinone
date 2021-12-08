@@ -7,8 +7,8 @@ DEBUG="${DEBUG:-}"
 
 STDOUT_LOGGING="${STDOUT_LOGGING:-false}"
 
-[ ! -d /data/files ] && mkdir -p /data/files
-[ ! -f /data/files/pwd ] && echo " " > /data/files/pwd
+[ ! -d /data/dovecot/files ] && mkdir -p /data/dovecot/files
+[ ! -f /data/dovecot/files/pwd ] && echo " " > /data/dovecot/files/pwd
 
 if [ "$STDOUT_LOGGING" == "true" ]; then
   sed -i '/^\(#\)\?log_path.*/d' /etc/dovecot/dovecot.conf
@@ -17,8 +17,13 @@ if [ "$STDOUT_LOGGING" == "true" ]; then
   echo 'log_path = /dev/stdout' >> /etc/dovecot/dovecot.conf
   echo 'info_log_path = /dev/stdout' >> /etc/dovecot/dovecot.conf
   echo 'debug_log_path = /dev/stdout' >> /etc/dovecot/dovecot.conf
+else
+  touch /var/log/dovecot.log
+  if [ -f /srv/scripts/logrotate.sh ]; then
+	/srv/scripts/logrotate.sh /var/log/dovecot.log
+  fi
 fi
-HOMEDIRS="${HOMEDIRS:-/data/home}"
+HOMEDIRS="${HOMEDIRS:-/data/dovecot/home}"
 [ ! -d "${HOMEDIRS}" ] && mkdir -p $HOMEDIRS
 chown 5000:5000 $HOMEDIRS
 chmod 775 $HOMEDIRS

@@ -66,8 +66,8 @@ server {
         log_not_found  off;
     }
 
-    access_log  /var/log/nginx_detailed.log detailed;
-    access_log  /var/log/nginx_access.log;
-    error_log   /var/log/nginx_error.log;
+    access_log  /var/log/nginx/detailed.log detailed;
+    access_log  /var/log/nginx/access.log;
+    error_log   /var/log/nginx/error.log;
 }
 

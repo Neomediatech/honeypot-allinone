@@ -14,6 +14,11 @@ if [ -d /usr/local/share/clamav ]; then
   chown clamav:clamav /usr/local/share/clamav
 fi
 
+if [ -f /srv/scripts/logrotate.sh ]; then
+	/srv/scripts/logrotate.sh /var/log/clamav/
+	/srv/scripts/logrotate.sh /var/log/clamav-unofficial-sigs/
+fi
+
 for file in bytecode.cvd daily.cvd main.cvd; do
   if [ ! -f $CLAMDIR/$file ]; then
     echo "$CLAMDIR/$file not found, downloading from database.clamav.net..."

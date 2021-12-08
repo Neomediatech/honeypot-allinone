@@ -94,3 +94,7 @@ if [ -x "$cmd" ]; then
   fi
 fi
 
+if [ -f /srv/scripts/logrotate.sh ]; then
+	/srv/scripts/logrotate.sh $LOGFILE
+fi
+

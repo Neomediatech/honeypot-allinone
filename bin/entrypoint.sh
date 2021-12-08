@@ -4,9 +4,7 @@ if [ ! -d /data ]; then
   mkdir -p /data
 fi
 
-mkdir -p /data/log
-
-chmod 777 /data /data/log
+chmod 777 /data 
 
 SEP="----------------------------------"
 
@@ -131,6 +129,7 @@ NAME="opencanary"
 echo $SEP
 echo "running $NAME..."
 
+./entrypoint-opencanary.sh
 ./startcanary.sh
 echo -e "\n"
 
@@ -191,6 +190,30 @@ echo "running $NAME..."
 mkdir -p /run/rspamd/ && chown _rspamd:_rspamd /run/rspamd/
 rspamd -u _rspamd -g _rspamd
 echo -e "\n"
+
+# ------------------
+#  dnsbl-ipset.sh
+
+NAME="dnsbl-ipset.sh"
+echo $SEP
+echo "running $NAME..."
+
+./entrypoint-dnsbl-ipset.sh
+./dnsbl-ipset.sh start >& /dev/null
+echo -e "\n"
+
+# ------------------
+#  OTHER CUSTOM SERVICES/SCRIPTS
+
+CSPATH="/srv/scripts/custom"
+if [ -d $CSPATH ]; then
+  for script in $(ls $CSPATH); do
+    echo $SEP
+    echo "running custom script $CSPATH/$script..."
+    bash $CSPATH/$script
+    echo -e "\n"
+  done
+fi
 
 # below the last service to start
 

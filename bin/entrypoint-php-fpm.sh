@@ -9,3 +9,8 @@ mkdir -p /var/log
 touch /var/log/http_err.log /var/log/http_spam_access.log
 chmod 666 /var/log/http_err.log /var/log/http_spam_access.log
 
+if [ -f /srv/scripts/logrotate.sh ]; then
+	/srv/scripts/logrotate.sh /var/log/http_spam_access.log
+	/srv/scripts/logrotate.sh /var/log/http_err.log
+fi
+

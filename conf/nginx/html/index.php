@@ -1,11 +1,10 @@
 <?php
 
-//include('apikey.php');
-//$key = '';
-
-$apikey_file = 'apikey.php';
+$apikey_file = '/data/common/prj-honeypot-api.key';
 
 if(file_exists($apikey_file)){
+  $key = file($apikey_file, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
+/* OLD METHOD
   $keys = file($apikey_file, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
   foreach($keys as $k){
     if(preg_match('/(^\$key)/', $k)) {
@@ -13,6 +12,7 @@ if(file_exists($apikey_file)){
 	break;
     }
   }
+*/
 } else {
   $key = '';
 }

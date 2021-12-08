@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     mariadb-client exim4-daemon-heavy libswitch-perl openssl \
     sudo \
     virtualenv g++ gcc \
-    rspamd && \
+    rspamd adns-tools ipset && \
     pip install setuptools && \
     pip install wheel && \
     pip install pyzor && \
@@ -51,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     make-ssl-cert generate-default-snakeoil && \
     mkdir /etc/dovecot && ln -s /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/dovecot/fullchain.pem && \
     ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem && \
-    mkdir -p /opt/opencanary /var/log/nginx && \
+    mkdir -p /opt/opencanary /var/log/nginx /etc/firehol && \
     touch /var/log/nginx/access.log /var/log/nginx/error.log && \
     rm -rf /var/www/html/ && mkdir -p /var/www/html/ && \
     apt-get install -y --no-install-suggests \
@@ -89,8 +89,11 @@ COPY conf/exim4/conf.d/ /etc/exim4/conf.d/
 COPY conf/nginx/default /etc/nginx/sites-enabled/
 COPY conf/nginx/html/ /var/www/html/
 
+COPY conf/dnsbl-ipset.conf /etc/firehol/
+
 WORKDIR /srv/scripts
-COPY bin/* ./
+COPY bin/ /srv/scripts/
+
 RUN chmod +x *.sh *.pl && \
     PY_VER="$(python3 -V|cut -d " " -f2|cut -d. -f1,2)" && \
     cp digest.py /usr/local/lib/python${PY_VER}/dist-packages/pyzor/digest.py

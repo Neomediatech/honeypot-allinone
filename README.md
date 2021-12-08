@@ -46,3 +46,31 @@ If you wish to run custom crontabs create the file `/data/crontabs/custom.cron` 
   30 20 *  *  * /other/command
 ```
 
+## Custom entrypoints
+You can run your own scripts/services just before the last, bind mounting `/srv/scripts/custom` directory.  
+Put here one or more bash script and it/they will be executed in entrypoint phase.  
+
+## Project HoneyPot API Key
+Put in `/data/common/prj-honeypot-api.key` your Project HoneyPot API Key, taken from https://www.projecthoneypot.org for free.  
+Or set the ENV var PROJECT_HONEY_POT_API_KEY (TBD)  
+
+## dnsbl-ipset.sh integration (https://github.com/firehol/firehol/tree/master/contrib)
+On the host create the file `/etc/rsyslog.d/30-your-preferred-name.conf`  
+And write this code:
+```
+:msg,contains,"AUDIT " /srv/data/fail2ban/logs/honeypot/iptables-audit.log
+& stop
+```
+
+Then create this ipset with this commands:  
+```
+ipset create private_nets hash:net comment  
+ipset add private_nets 10.0.0.0/8  
+ipset add private_nets 192.168.0.0/16  
+ipset add private_nets 172.16.0.0/12  
+```  
+
+Then add in your iptables rules this:  
+`iptables -I DOCKER-USER -p tcp -m state --state NEW -m set ! --match-set private_nets src -j LOG --log-level debug --log-prefix "AUDIT "`
+
+

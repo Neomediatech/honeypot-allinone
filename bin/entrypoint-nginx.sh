@@ -1,11 +1,9 @@
 #!/bin/bash
 
-LOGDIR="/var/log"
+LOGDIR="/var/log/nginx"
 LOGFILE="$LOGDIR/access.log"
 
 STDOUT_LOGGING="${STDOUT_LOGGING:-false}"
-
-mkdir -p /var/log/nginx
 
 if [ "$STDOUT_LOGGING" != "true" ]; then
   if [ ! -d "${LOGDIR}" ]; then
@@ -16,6 +14,9 @@ if [ "$STDOUT_LOGGING" != "true" ]; then
   if [ ! -f "${LOGFILE}" ]; then
     touch "${LOGFILE}"
     chown www-data "${LOGFILE}"
+  fi
+  if [ -f /srv/scripts/logrotate.sh ]; then
+	/srv/scripts/logrotate.sh "${LOGDIR}"
   fi
 fi
 
@@ -97,5 +98,5 @@ fi
 
 if [ "$STDOUT_LOGGING" != "true" ]; then
   exec tail -F ${LOGFILE} &
-  exec tail -F ${LOGDIR}/nginx_*.log &
+  exec tail -F ${LOGDIR}/*.log &
 fi

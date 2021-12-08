@@ -38,26 +38,29 @@ dc_mailname_in_oh='true'
 dc_localdelivery='maildir_home'
 EOM
 
+if [ ! -d "${LOGDIR}" ]; then
+  mkdir -p "${LOGDIR}"
+fi
+ 
 if [ "$LOGDIR" == "stdout" ]; then
-  mkdir -p /var/log/exim4
   rm -f "$LOGDIR"/{main,reject,panic}log
   ln -s /dev/stdout /var/log/exim4/mainlog
   ln -s /dev/stderr /var/log/exim4/rejectlog
   ln -s /dev/stderr /var/log/exim4/paniclog
   echo 'log_file_path = syslog' > /etc/exim4/conf.d/main/99_custom_log_file_path
 else
-  if [ ! -d "${LOGDIR}" ]; then
-    mkdir -p "${LOGDIR}"
-    #chown Debian-exim:adm "${LOGDIR}"
+   #chown Debian-exim:adm "${LOGDIR}"
     #chmod 750 "${LOGDIR}"
     #chmod g+s "${LOGDIR}"
-  fi
   if [ ! -f "${LOGDIR}/mainlog" ]; then
-    touch "${LOGDIR}/mainlog ${LOGDIR}/rejectlog ${LOGDIR}/paniclog"
-    chown Debian-exim:adm ${LOGDIR}/mainlog ${LOGDIR}/rejectlog ${LOGDIR}/paniclog
+    touch "${LOGDIR}"/mainlog "${LOGDIR}"/rejectlog "${LOGDIR}"/paniclog
+    chown Debian-exim:adm "${LOGDIR}"/mainlog "${LOGDIR}"/rejectlog "${LOGDIR}"/paniclog
     chmod 640 "${LOGDIR}/mainlog"
   fi
   echo "log_file_path = $LOGDIR/%slog" > /etc/exim4/conf.d/main/99_custom_log_file_path
+  if [ -f /srv/scripts/logrotate.sh ]; then
+	/srv/scripts/logrotate.sh "${LOGDIR}"
+  fi
 fi
 
 if [ -f /run/secrets/dovecot-fqdn-cert.txt ]; then
