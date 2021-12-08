@@ -54,7 +54,8 @@ Put here one or more bash script and it/they will be executed in entrypoint phas
 Put in `/data/common/prj-honeypot-api.key` your Project HoneyPot API Key, taken from https://www.projecthoneypot.org for free.  
 Or set the ENV var PROJECT_HONEY_POT_API_KEY (TBD)  
 
-## dnsbl-ipset.sh integration (https://github.com/firehol/firehol/tree/master/contrib)
+## dnsbl-ipset.sh integration
+(Taken from https://github.com/firehol/firehol/tree/master/contrib but customi[s|z]ed for our use)  
 On the host create the file `/etc/rsyslog.d/30-your-preferred-name.conf`  
 And write this code:
 ```
