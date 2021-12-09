@@ -72,6 +72,10 @@ ipset add private_nets 172.16.0.0/12
 ```  
 
 Then add in your iptables rules this:  
-`iptables -I DOCKER-USER -p tcp -m state --state NEW -m set ! --match-set private_nets src -j LOG --log-level debug --log-prefix "AUDIT "`
+`iptables -I DOCKER-USER -p tcp -m state --state NEW -m set ! --match-set private_nets src -j LOG --log-level debug --log-prefix "AUDIT "`  
 
+## Censys network block
+Censys (https://about.censys.io/) scans too many times our hosts, hence we block their IPs/Networks.  
+Their networks are: 192.35.168.0/23, 162.142.125.0/24, 167.248.133.0/24, 167.94.138.0/24, 167.94.145.0/24, and 167.94.146.0/24.  
+See [conf/manual-blacklisted-ip.conf](conf/manual-blacklisted-ip.conf).  
 

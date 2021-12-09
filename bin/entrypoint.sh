@@ -203,6 +203,19 @@ echo "running $NAME..."
 echo -e "\n"
 
 # ------------------
+#  CHECK MANUAL BLACKLISTED IP/NETWORK ADDRESSES
+
+BLFILE="/srv/common/manual-blacklisted-ip.conf"
+if [ -s "$BLFILE" ]; then
+  echo "adding blacklisted IP from $BLFILE..."
+  [ ! -d /var/log ] && mkdir -p /var/log
+  [ -f /var/log/manual-blacklisted-ip.log ] && cat /dev/null > /var/log/manual-blacklisted-ip.log
+  cat "$BLFILE" |grep "^[[:digit:]]" | while read ipnet; do
+    echo "$(date "+%Y-%m-%d %H:%M:%S") $ipnet" >> /var/log/manual-blacklisted-ip.log
+  done
+fi
+
+# ------------------
 #  OTHER CUSTOM SERVICES/SCRIPTS
 
 CSPATH="/srv/scripts/custom"

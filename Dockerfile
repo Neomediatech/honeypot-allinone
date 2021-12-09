@@ -46,12 +46,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     mkdir -p /run/named && chown bind /run/named && \
     mkdir -p /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
-    groupadd -g 5000 vmail && useradd -u 5000 -g 5000 vmail -d /srv/mail && passwd -l vmail && \
-    rm -rf /etc/dovecot && mkdir -p /srv/mail && chown vmail:vmail /srv/mail && \
+    groupadd -g 5000 vmail && useradd -u 5000 -g 5000 vmail -d /data/dovecot/home/vmail && passwd -l vmail && \
+    rm -rf /etc/dovecot && mkdir -p /data/dovecot/home/vmail && chown vmail:vmail /data/dovecot/home/vmail && \
     make-ssl-cert generate-default-snakeoil && \
     mkdir /etc/dovecot && ln -s /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/dovecot/fullchain.pem && \
     ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem && \
-    mkdir -p /opt/opencanary /var/log/nginx /etc/firehol && \
+    mkdir -p /opt/opencanary /var/log/nginx /etc/firehol /srv/common && \
     touch /var/log/nginx/access.log /var/log/nginx/error.log && \
     rm -rf /var/www/html/ && mkdir -p /var/www/html/ && \
     apt-get install -y --no-install-suggests \
@@ -90,6 +90,8 @@ COPY conf/nginx/default /etc/nginx/sites-enabled/
 COPY conf/nginx/html/ /var/www/html/
 
 COPY conf/dnsbl-ipset.conf /etc/firehol/
+
+COPY conf/manual-blacklisted-ip.conf /srv/common/
 
 WORKDIR /srv/scripts
 COPY bin/ /srv/scripts/
