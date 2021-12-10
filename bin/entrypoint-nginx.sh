@@ -97,6 +97,5 @@ if [ -d "${SRC_DIR}" ]; then
 fi
 
 if [ "$STDOUT_LOGGING" != "true" ]; then
-  exec tail -F ${LOGFILE} &
   exec tail -F ${LOGDIR}/*.log &
 fi

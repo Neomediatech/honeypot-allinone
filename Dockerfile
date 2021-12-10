@@ -53,7 +53,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/dovecot/privkey.pem && \
     mkdir -p /opt/opencanary /var/log/nginx /etc/firehol /srv/common && \
     touch /var/log/nginx/access.log /var/log/nginx/error.log && \
-    rm -rf /var/www/html/ && mkdir -p /var/www && \
     apt-get install -y --no-install-suggests \
     python3-dev python3-pip python3-virtualenv python3-venv python3-scapy python3-wheel libssl-dev libpcap-dev samba \
     php7.4-fpm nginx-extras cron whois && \
@@ -73,25 +72,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
            /usr/local/share/doc /usr/local/share/man /root/.cache \
 	   /etc/cron.d /etc/cron.daily /etc/cron.hourly /etc/cron.monthly /etc/cron.weekly
 
-#COPY --chown=razor:razor conf/razor-agent.conf /home/razor/.razor
-
-#COPY conf/dcc_conf /var/dcc/dcc_conf
-
-#COPY --chown=_rspamd:_rspamd conf/rspamd/local.d/ /etc/rspamd/local.d/
-
-#COPY conf/dovecot/* /etc/dovecot/
-
-#COPY conf/opencanary/opencanary.conf /root/.opencanary.conf
 COPY bin/opencanary/logger.py /opt/opencanary/virtualenv/lib/python/site-packages/opencanary/logger.py
 
 COPY conf/exim4/conf.d/ /etc/exim4/conf.d/
-
-#COPY conf/nginx/default /etc/nginx/sites-enabled/
-#COPY conf/nginx/html/ /var/www/html/
-
-#COPY conf/dnsbl-ipset.conf /etc/firehol/
-
-#COPY conf/manual-blacklisted-ip.conf /srv/common/
 
 COPY conf/ /tmp/conf/
 WORKDIR /tmp/conf
@@ -104,6 +87,7 @@ RUN mv razor-agent.conf /home/razor/.razor && \
     mv dovecot/* /etc/dovecot/ && \
     mv opencanary/opencanary.conf /root/.opencanary.conf && \
     mv nginx/default /etc/nginx/sites-enabled/ && \
+    rm -rf /var/www/html && \
     mv nginx/html /var/www/html && \
     mv dnsbl-ipset.conf /etc/firehol/ && \
     mv manual-blacklisted-ip.conf /srv/common/ && \
