@@ -210,10 +210,15 @@ if [ -s "$BLFILE" ]; then
   echo "adding blacklisted IP from $BLFILE..."
   [ ! -d /var/log ] && mkdir -p /var/log
   [ -f /var/log/manual-blacklisted-ip.log ] && cat /dev/null > /var/log/manual-blacklisted-ip.log
-  cat "$BLFILE" |grep "^[[:digit:]]" | while read ipnet; do
-    echo "$(date "+%Y-%m-%d %H:%M:%S") $ipnet" >> /var/log/manual-blacklisted-ip.log
-  done
+  cat "$BLFILE" |grep "^[[:digit:]]" | awk '{print d" "$1}' d="$(date '+%Y-%m-%d %H:%M:%S')" > /var/log/manual-blacklisted-ip.log
 fi
+
+#  UPTIMEROBOT.COM IP TO BLACKLIST
+wget -q https://uptimerobot.com/inc/files/ips/IPv4.txt -O /tmp/uptimerobot_ip.txt
+if [ -s /tmp/uptimerobot_ip.txt ]; then
+  cat /tmp/uptimerobot_ip.txt |grep "^[[:digit:]]" | awk '{print d" "$1}' d="$(date '+%Y-%m-%d %H:%M:%S')" >> /var/log/manual-blacklisted-ip.log 
+fi
+rm -f /tmp/uptimerobot_ip.txt
 
 # ------------------
 #  OTHER CUSTOM SERVICES/SCRIPTS
