@@ -3,7 +3,8 @@
 $apikey_file = '/data/common/prj-honeypot-api.key';
 
 if(file_exists($apikey_file)){
-  $key = file($apikey_file, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
+  $file_array = file($apikey_file, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
+  $key = $file_array[0];
 /* OLD METHOD
   $keys = file($apikey_file, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
   foreach($keys as $k){
