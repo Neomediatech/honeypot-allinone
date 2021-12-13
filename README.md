@@ -59,7 +59,7 @@ Or set the ENV var PROJECT_HONEY_POT_API_KEY (TBD)
 On the host create the file `/etc/rsyslog.d/30-your-preferred-name.conf`  
 And write this code:
 ```
-:msg,contains,"AUDIT " /srv/data/fail2ban/logs/honeypot/iptables-audit.log
+:msg,contains,"AUDIT " /srv/data/docker/container/fail2ban/logs/honeypot/iptables-audit.log
 & stop
 ```
 
