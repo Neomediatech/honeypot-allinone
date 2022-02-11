@@ -115,23 +115,32 @@ echo -e "\n"
 #  DOVECOT
 
 NAME="dovecot"
-echo $SEP
-echo "running $NAME..."
 
-./entrypoint-dovecot.sh
-dovecot
-echo -e "\n"
+if [ -n "$DOVECOT_START" ] && [ "$DOVECOT_START" = "no" ]; then
+  echo "NOT running $NAME because of '\$DOVECOT_START=no' setting"
+else
+  echo $SEP
+  echo "running $NAME..."
+
+  ./entrypoint-dovecot.sh
+  dovecot
+  echo -e "\n"
+fi
 
 # ------------------
 #  OPENCANARY
 
 NAME="opencanary"
-echo $SEP
-echo "running $NAME..."
 
-./entrypoint-opencanary.sh
-./startcanary.sh
-echo -e "\n"
+if [ -n "$OPENCANARY_START" ] && [ "$OPENCANARY_START" = "no" ]; then
+  echo "NOT running $NAME because of '\$OPENCANARY_START=no' setting"
+else
+  echo $SEP
+  echo "running $NAME..."
+  ./entrypoint-opencanary.sh
+  ./startcanary.sh
+  echo -e "\n"
+fi
 
 # ------------------
 #  PHP-FPM
