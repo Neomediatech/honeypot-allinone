@@ -192,13 +192,18 @@ echo -e "\n"
 #  RSPAMD
 
 NAME="rspamd"
-echo $SEP
-echo "running $NAME..."
 
-./entrypoint-rspamd.sh
-mkdir -p /run/rspamd/ && chown _rspamd:_rspamd /run/rspamd/
-rspamd -u _rspamd -g _rspamd
-echo -e "\n"
+if [ -n "$RSPAMD_START" ] && [ "$RSPAMD_START" = "no" ]; then
+  echo "NOT running $NAME because of '\$RSPAMD_START=no' setting"
+else
+  echo $SEP
+  echo "running $NAME..."
+
+  ./entrypoint-rspamd.sh
+  mkdir -p /run/rspamd/ && chown _rspamd:_rspamd /run/rspamd/
+  rspamd -u _rspamd -g _rspamd
+  echo -e "\n"
+fi
 
 # ------------------
 #  dnsbl-ipset.sh
