@@ -1,15 +1,15 @@
 dnslists_cbl:
   warn
         !hosts    = 127.0.0.1
-        logwrite  = ABUSEAT CHECK:   [$sender_host_address]
+        logwrite  = SPAMHAUS XBL CHECK:   [$sender_host_address]
 
   warn
         !hosts                      = 127.0.0.1
-        dnslists                    = cbl.abuseat.org
+        dnslists                    = xbl.spamhaus.org
         set acl_m_dnslist_cbl_found = 1
         set acl_m_cbl_msg           = $dnslist_text
         logwrite  = ---------------------------------------------------------
-        logwrite  = WARNING: [$sender_host_address] found in $dnslist_domain ($dnslist_text). DEFERRED
+        logwrite  = WARNING: [$sender_host_address] found in $dnslist_domain ($dnslist_text)
         logwrite  = ---------------------------------------------------------
 
   accept

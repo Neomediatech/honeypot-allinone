@@ -209,12 +209,17 @@ fi
 #  dnsbl-ipset.sh
 
 NAME="dnsbl-ipset.sh"
-echo $SEP
-echo "running $NAME..."
 
-./entrypoint-dnsbl-ipset.sh
-./dnsbl-ipset.sh start >& /dev/null
-echo -e "\n"
+if [ -n "$DNSBL_IPSET_START" ] && [ "$DNSBL_IPSET_START" = "no" ]; then
+  echo "NOT running $NAME because of '\$DNSBL_IPSET_START=no' setting"
+else
+  echo $SEP
+  echo "running $NAME..."
+
+  ./entrypoint-dnsbl-ipset.sh
+  ./dnsbl-ipset.sh start >& /dev/null
+  echo -e "\n"
+fi
 
 # ------------------
 #  CHECK MANUAL BLACKLISTED IP/NETWORK ADDRESSES

@@ -2,3 +2,4 @@ trigger-build.sh
 run.sh
 vars
 tests/
+build.sh
