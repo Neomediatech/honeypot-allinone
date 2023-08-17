@@ -76,7 +76,7 @@ Then add in your iptables rules this:
 
 | Option            | Default    | Descritpion                                 |
 | ----------------- | ---------- | ------------------------------------------- |
-| DNSBL_IPSET_START | (empty)    | Set to "**no**" to not start dnsbl-ipset.sh |
+| DNSBL_IPSET_START |    yes     | Set to "**no**" to not start dnsbl-ipset.sh |
 
 ## Censys network block
 Censys (https://about.censys.io/) scans too many times our hosts, hence we block their IPs/Networks.  
@@ -90,4 +90,6 @@ See [conf/manual-blacklisted-ip.conf](conf/manual-blacklisted-ip.conf).
 | DOVECOT_START       | Start Dovecot?                                                          | unset                       |
 | OPENCANARY_START    | Start OpenCanary?                                                       | unset                       |
 | PYZOR_SERVER        | Set custom Pyzor server (only name or ip address, static port is 24441) | unset, use standard servers |
+| RSPAMD_START        | Start Rspamd? "yes" (default), "no" (or unset) to not start it          | yes                         |
+| DNSBL_IPSET_START   | Start dnsbl-ipset.sh? "yes" (default), "no" (or unset) to not start it  | yes                         |
 
