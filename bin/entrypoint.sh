@@ -37,79 +37,104 @@ echo -e "\n"
 
 NAME="pyzor"
 echo $SEP
-echo "running $NAME..."
 
-PYZOR_SERVER=${PYZOR_SERVER:-}
+if [ -n "$RSPAMD_START" ] && [ "$RSPAMD_START" = "no" ]; then
+  echo "NOT running $NAME because of '\$RSPAMD_START=no' setting"
+else
+  echo "running $NAME..."
 
-if [ "${PYZOR_SERVER}" != "" ]; then
+  PYZOR_SERVER=${PYZOR_SERVER:-}
+
+  if [ "${PYZOR_SERVER}" != "" ]; then
     mkdir -p /root/.pyzor
     echo "${PYZOR_SERVER}:24441" > /root/.pyzor/servers
-fi
+  fi
 
-#exec /tini -e 143 -- python3 ./pyzorsocket.py 0.0.0.0 5953
-cd /srv/scripts
-python3 ./pyzorsocket.py 0.0.0.0 5953 &
-echo -e "\n"
+  #exec /tini -e 143 -- python3 ./pyzorsocket.py 0.0.0.0 5953
+  cd /srv/scripts
+  python3 ./pyzorsocket.py 0.0.0.0 5953 &
+  echo -e "\n"
+fi
 
 # ------------------
 #  RAZOR
 
 NAME="razor"
 echo $SEP
-echo "running $NAME..."
 
-#display environment variables passed with --env
-echo "\$RAZORFY_DEBUG= $RAZORFY_DEBUG"
-echo "\$RAZORFY_BINDPORT= $RAZORFY_BINDPORT"
-echo "\$RAZORFY_MAXTHREADS= $RAZORFY_MAXTHREADS"
-echo
+if [ -n "$RSPAMD_START" ] && [ "$RSPAMD_START" = "no" ]; then
+  echo "NOT running $NAME because of '\$RSPAMD_START=no' setting"
+else
+  echo "running $NAME..."
 
-NME=razor
+  #display environment variables passed with --env
+  echo "\$RAZORFY_DEBUG= $RAZORFY_DEBUG"
+  echo "\$RAZORFY_BINDPORT= $RAZORFY_BINDPORT"
+  echo "\$RAZORFY_MAXTHREADS= $RAZORFY_MAXTHREADS"
+  echo
+
+  NME=razor
     
-echo "export RAZORFY_BINDADDRESS=0.0.0.0" > /home/"$NME"/.profile
-[ -n "$RAZORFY_DEBUG" ] && echo "export RAZORFY_DEBUG=$RAZORFY_DEBUG" >> /home/"$NME"/.profile
-[ -n "$RAZORFY_BINDPORT" ] &&  echo "export RAZORFY_BINDPORT=$RAZORFY_BINDPORT" >> /home/"$NME"/.profile
-[ -n "$RAZORFY_MAXTHREADS" ] &&  echo "export RAZORFY_MAXTHREADS=$RAZORFY_MAXTHREADS" >> /home/"$NME"/.profile
+  echo "export RAZORFY_BINDADDRESS=0.0.0.0" > /home/"$NME"/.profile
+  [ -n "$RAZORFY_DEBUG" ] && echo "export RAZORFY_DEBUG=$RAZORFY_DEBUG" >> /home/"$NME"/.profile
+  [ -n "$RAZORFY_BINDPORT" ] &&  echo "export RAZORFY_BINDPORT=$RAZORFY_BINDPORT" >> /home/"$NME"/.profile
+  [ -n "$RAZORFY_MAXTHREADS" ] &&  echo "export RAZORFY_MAXTHREADS=$RAZORFY_MAXTHREADS" >> /home/"$NME"/.profile
 
-echo "Starting razorfy at $(date +'%x %X')"
-echo "Changing to user $NME"
-su -c 'cd /srv/scripts ; ./razorfy.pl' - "$NME" &
-echo -e "\n"
+  echo "Starting razorfy at $(date +'%x %X')"
+  echo "Changing to user $NME"
+  su -c 'cd /srv/scripts ; ./razorfy.pl' - "$NME" &
+  echo -e "\n"
+fi
 
 # ------------------
 #  PYZOR-CC
 
 NAME="pyzor-cc"
 echo $SEP
-echo "running $NAME..."
 
-python3 ./pyzorsocket.py 0.0.0.0 5954 &
-echo -e "\n"
+if [ -n "$RSPAMD_START" ] && [ "$RSPAMD_START" = "no" ]; then
+  echo "NOT running $NAME because of '\$RSPAMD_START=no' setting"
+else
+  echo "running $NAME..."
+
+  python3 ./pyzorsocket.py 0.0.0.0 5954 &
+  echo -e "\n"
+fi
 
 # ------------------
 #  DCC
 
 NAME="dcc"
 echo $SEP
-echo "running $NAME..."
 
-rm -rf /var/dcc/log
-mkdir -p /var/dcc/log
-chown -R user:user /var/dcc
+if [ -n "$RSPAMD_START" ] && [ "$RSPAMD_START" = "no" ]; then
+  echo "NOT running $NAME because of '\$RSPAMD_START=no' setting"
+else
+  echo "running $NAME..."
 
-/var/dcc/libexec/rcDCC -m dccifd start &
-echo -e "\n"
+  rm -rf /var/dcc/log
+  mkdir -p /var/dcc/log
+  chown -R user:user /var/dcc
+
+  /var/dcc/libexec/rcDCC -m dccifd start &
+  echo -e "\n"
+fi
 
 # ------------------
 #  REDIS
 
 NAME="redis"
 echo $SEP
-echo "running $NAME..."
 
-sysctl net.core.somaxconn=511 || ok=1
-redis-server --port 6380 &
-echo -e "\n"
+if [ -n "$RSPAMD_START" ] && [ "$RSPAMD_START" = "no" ]; then
+  echo "NOT running $NAME because of '\$RSPAMD_START=no' setting"
+else
+  echo "running $NAME..."
+
+  sysctl net.core.somaxconn=511 || ok=1
+  redis-server --port 6380 &
+  echo -e "\n"
+fi
 
 # ------------------
 #  DOVECOT
